@@ -16,4 +16,9 @@ class TrackRestController(val dropboxApi: DropboxApi) {
     fun getTracks(): List<DropboxApi.DropboxTracks> {
         return dropboxApi.fetchTracks()
     }
+
+    @GetMapping("/tracks/{id}/download")
+    fun downloadTrack(@PathVariable id: String): ByteArray? {
+        return dropboxApi.downloadTrack(id)
+    }
 }

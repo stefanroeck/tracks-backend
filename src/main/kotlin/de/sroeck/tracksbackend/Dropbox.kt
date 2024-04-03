@@ -14,7 +14,7 @@ import java.time.Instant
 class DropboxApi(val objectMapper: ObjectMapper, val httpClient: HttpClient, val dropboxConnectionParams: DropboxBeans.DropboxConnectionParams) {
 
     private class AccessToken (val accessToken: String, expiresIn: Long) {
-        private val expiresAt = Instant.now().plusMillis(expiresIn);
+        private val expiresAt = Instant.now().plusMillis(expiresIn)
 
         fun expired() = Instant.now().isAfter(expiresAt)
     }
@@ -54,6 +54,27 @@ class DropboxApi(val objectMapper: ObjectMapper, val httpClient: HttpClient, val
         }
     }
 
+    fun downloadTrack(id: String): ByteArray {
+        println("Downloading track: $id")
+        data class DropboxApiArg(val path: String)
+
+        val request = HttpRequest.newBuilder()
+                .uri(URI("https://content.dropboxapi.com/2/files/download"))
+                .headers("Content-Type", "text/plain")
+                .headers("Authorization", "Bearer ${getAccessToken()}")
+                .headers("Dropbox-API-Arg", objectMapper.writeValueAsString(DropboxApiArg(id)))
+                .POST(HttpRequest.BodyPublishers.ofString(""))
+                .build()
+
+        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray())
+        if (response.statusCode() == 200) {
+            // response is the file
+            return response.body()
+        } else {
+            error("Unexpected dropbox response: code=${response.statusCode()}, body=${String(response.body())}")
+        }
+    }
+
     private fun toFormData(map: Map<String, String>): String {
         return map.map { (key, value) -> "$key=$value" }.joinToString("&")
     }
@@ -66,7 +87,7 @@ class DropboxApi(val objectMapper: ObjectMapper, val httpClient: HttpClient, val
     private fun getAccessToken(): String {
         val existingToken = this.accessToken?.takeIf { t -> !t.expired() }
         if (existingToken != null) {
-            return existingToken.accessToken;
+            return existingToken.accessToken
         }
 
         println("Obtaining new accessToken")
