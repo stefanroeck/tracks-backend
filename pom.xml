@@ -50,6 +50,15 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.garmin/fit -->
+		<dependency>
+			<groupId>com.garmin</groupId>
+			<artifactId>fit</artifactId>
+			<version>21.135.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
