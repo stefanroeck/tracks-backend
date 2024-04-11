@@ -1,20 +1,21 @@
-package de.sroeck.tracksbackend.fit
+package de.sroeck.tracksbackend.fit2gpx
 
 import com.garmin.fit.Sport
+import convertToGpx
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 
-class FitToGpxKtTest {
+class ParseFitKtTest {
 
     private fun sampleFitFileAsBytes(): ByteArray {
-        val bytes = FitToGpxKtTest::class.java.classLoader.getResource("sampleFitFile.fit")?.readBytes()
+        val bytes = ParseFitKtTest::class.java.classLoader.getResource("sampleFitFile.fit")?.readBytes()
             ?: throw IllegalStateException("Cannot read sampleFitFile.fit")
         return bytes
     }
 
     private fun sampleGpxFileAsString(): String {
-        val text = FitToGpxKtTest::class.java.classLoader.getResource("sampleGpxFile.xml")?.readText(Charsets.UTF_8)
+        val text = ParseFitKtTest::class.java.classLoader.getResource("sampleGpxFile.xml")?.readText(Charsets.UTF_8)
             ?: throw IllegalStateException("Cannot read sampleGpxFile.xml")
         return text
     }
