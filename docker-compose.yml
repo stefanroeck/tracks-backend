@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  mongo:
+    ports:
+      - '27017:27017'
+    container_name: mongo-db
+    restart: unless-stopped
+    logging:
+      options:
+        max-size: 1g
+    env_file: [.env-mongo, .env]
+    image: mongo:7.0.8
+    volumes:
+      - mongo:/data/db
+      - ./scripts/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+
+volumes:
+  mongo:

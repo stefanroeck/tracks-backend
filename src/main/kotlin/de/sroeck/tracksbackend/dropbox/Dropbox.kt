@@ -1,4 +1,4 @@
-package de.sroeck.tracksbackend
+package de.sroeck.tracksbackend.dropbox
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode

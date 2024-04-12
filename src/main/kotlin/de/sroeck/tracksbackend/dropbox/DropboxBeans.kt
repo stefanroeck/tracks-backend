@@ -1,4 +1,4 @@
-package de.sroeck.tracksbackend
+package de.sroeck.tracksbackend.dropbox
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
