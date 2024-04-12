@@ -2,6 +2,7 @@ package de.sroeck.tracksbackend.fit2gpx
 
 import com.garmin.fit.*
 import java.io.ByteArrayInputStream
+import java.time.Instant
 
 data class FitDataPoint(
     val lat: Int,
@@ -19,8 +20,10 @@ data class FitSession(
     val totalDistance: Float,
     val totalAscent: Int,
     val totalDescent: Int,
-    val totalCalories: Int
-)
+    val totalCalories: Int,
+) {
+    fun trackTimestamp(): Instant = startTime.date.toInstant()
+}
 
 data class FitData(val fitDataPoints: List<FitDataPoint>, val fitSession: FitSession)
 
@@ -34,13 +37,30 @@ fun parseFitFile(fitFile: ByteArray): FitData {
     val msgBroadcaster = MesgBroadcaster(decoder)
     msgBroadcaster.addListener(RecordMesgListener { message ->
         if (message.positionLat != null && message.positionLong != null && message.timestamp != null) {
-            collectedDataPoints.add(FitDataPoint(message.positionLat, message.positionLong, message.timestamp, message.altitude, message.heartRate))
+            collectedDataPoints.add(
+                FitDataPoint(
+                    message.positionLat,
+                    message.positionLong,
+                    message.timestamp,
+                    message.altitude,
+                    message.heartRate
+                )
+            )
         }
     })
 
     var fitSession: FitSession? = null
     msgBroadcaster.addListener(SessionMesgListener { message ->
-        fitSession = FitSession(message.startTime, message.sport, message.totalElapsedTime, message.totalTimerTime, message.totalDistance, message.totalAscent, message.totalDescent, message.totalCalories)
+        fitSession = FitSession(
+            message.startTime,
+            message.sport,
+            message.totalElapsedTime,
+            message.totalTimerTime,
+            message.totalDistance,
+            message.totalAscent,
+            message.totalDescent,
+            message.totalCalories
+        )
     })
 
     decoder.read(ByteArrayInputStream(fitFile), msgBroadcaster)

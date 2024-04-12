@@ -2,7 +2,8 @@
      xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1"
      creator="gpx-backend">
 <trk>
-  <name>Imported File</name>
+  <name>Walking</name>
+  <desc>name=Walking time=2023-12-17T08:28:39Z</desc>
   <trkseg>
     <trkpt lat="48.555439626798034" lon="8.7280747666955">
       <ele/>

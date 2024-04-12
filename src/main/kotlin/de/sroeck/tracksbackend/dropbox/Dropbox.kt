@@ -11,60 +11,76 @@ import java.net.http.HttpResponse
 import java.time.Instant
 
 @Service
-class DropboxApi(val objectMapper: ObjectMapper, val httpClient: HttpClient, val dropboxConnectionParams: DropboxBeans.DropboxConnectionParams) {
+class DropboxApi(
+    val objectMapper: ObjectMapper,
+    val httpClient: HttpClient,
+    val dropboxConnectionParams: DropboxBeans.DropboxConnectionParams
+) {
 
-    private class AccessToken (val accessToken: String, expiresIn: Long) {
+    private class AccessToken(val accessToken: String, expiresIn: Long) {
         private val expiresAt = Instant.now().plusMillis(expiresIn)
 
         fun expired() = Instant.now().isAfter(expiresAt)
     }
 
-    private data class DropboxSearchRequestOptions(val path: String,
-                                                   @get:JsonProperty("file_extensions") val fileExtensions: List<String>)
+    private data class DropboxSearchRequestOptions(
+        val path: String,
+        @get:JsonProperty("file_extensions") val fileExtensions: List<String>
+    )
 
 
     private data class DropboxSearchRequest(val query: String, val options: DropboxSearchRequestOptions)
 
-    data class DropboxTracks(val trackId: String, val path: String, val name: String, val size: Int)
+    data class DropboxTracks(val id: String, val path: String, val name: String, val size: Int)
 
     private var accessToken: AccessToken? = null
 
     fun fetchTracks(): List<DropboxTracks> {
 
-        val params = DropboxSearchRequest("#longdistancewalk", DropboxSearchRequestOptions("/Apps/Runalyze/activities", listOf("fit")))
+        val params = DropboxSearchRequest(
+            "#longdistancewalk",
+            DropboxSearchRequestOptions("/Apps/Runalyze/activities", listOf("fit"))
+        )
         val queryParam = objectMapper.writeValueAsString(params)
         println("Querying all tracks with: $queryParam")
         val request = HttpRequest.newBuilder()
-                .uri(URI("https://api.dropboxapi.com/2/files/search_v2"))
-                .headers("Content-Type", "application/json")
-                .headers("Authorization", "Bearer ${getAccessToken()}")
-                .POST(HttpRequest.BodyPublishers.ofString(queryParam))
-                .build()
+            .uri(URI("https://api.dropboxapi.com/2/files/search_v2"))
+            .headers("Content-Type", "application/json")
+            .headers("Authorization", "Bearer ${getAccessToken()}")
+            .POST(HttpRequest.BodyPublishers.ofString(queryParam))
+            .build()
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
         if (response.statusCode() == 200) {
             val jsonResponse = objectMapper.readValue(response.body(), JsonNode::class.java)
             val matches = jsonResponse.get("matches")
             return matches
-                    .map { match: JsonNode -> { match.get("metadata").get("metadata") } }
-                    .map { file: () -> JsonNode -> DropboxTracks(file().get("id").asText(), file().get("path_display").asText(), file().get("name").asText(), file().get("size").asInt()) }
+                .map { match: JsonNode -> { match.get("metadata").get("metadata") } }
+                .map { file: () -> JsonNode ->
+                    DropboxTracks(
+                        file().get("id").asText(),
+                        file().get("path_display").asText(),
+                        file().get("name").asText(),
+                        file().get("size").asInt()
+                    )
+                }
         } else {
             println("Unexpected dropbox response: code=${response.statusCode()}, body=${response.body()}")
             return emptyList()
         }
     }
 
-    fun downloadTrack(id: String): ByteArray {
-        println("Downloading track: $id")
+    fun downloadTrack(path: String): ByteArray {
+        println("Downloading track: $path")
         data class DropboxApiArg(val path: String)
 
         val request = HttpRequest.newBuilder()
-                .uri(URI("https://content.dropboxapi.com/2/files/download"))
-                .headers("Content-Type", "text/plain")
-                .headers("Authorization", "Bearer ${getAccessToken()}")
-                .headers("Dropbox-API-Arg", objectMapper.writeValueAsString(DropboxApiArg(id)))
-                .POST(HttpRequest.BodyPublishers.ofString(""))
-                .build()
+            .uri(URI("https://content.dropboxapi.com/2/files/download"))
+            .headers("Content-Type", "text/plain")
+            .headers("Authorization", "Bearer ${getAccessToken()}")
+            .headers("Dropbox-API-Arg", objectMapper.writeValueAsString(DropboxApiArg(path)))
+            .POST(HttpRequest.BodyPublishers.ofString(""))
+            .build()
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray())
         if (response.statusCode() == 200) {
@@ -80,8 +96,8 @@ class DropboxApi(val objectMapper: ObjectMapper, val httpClient: HttpClient, val
     }
 
     private data class AccessTokenResponse(
-            @get:JsonProperty("access_token") val accessToken: String,
-            @get:JsonProperty("expires_in") val expiresIn: Long
+        @get:JsonProperty("access_token") val accessToken: String,
+        @get:JsonProperty("expires_in") val expiresIn: Long
     )
 
     private fun getAccessToken(): String {
@@ -98,16 +114,16 @@ class DropboxApi(val objectMapper: ObjectMapper, val httpClient: HttpClient, val
 
     private fun fetchAccessToken(): AccessTokenResponse {
         val formData: Map<String, String> = mapOf(
-                "grant_type" to "refresh_token",
-                "client_id" to this.dropboxConnectionParams.clientId,
-                "client_secret" to this.dropboxConnectionParams.secret,
-                "refresh_token" to this.dropboxConnectionParams.refreshToken,
+            "grant_type" to "refresh_token",
+            "client_id" to this.dropboxConnectionParams.clientId,
+            "client_secret" to this.dropboxConnectionParams.secret,
+            "refresh_token" to this.dropboxConnectionParams.refreshToken,
         )
         val body = toFormData(formData)
         val request = HttpRequest.newBuilder()
-                .uri(URI("https://api.dropbox.com/oauth2/token"))
-                .POST(HttpRequest.BodyPublishers.ofString(body))
-                .build()
+            .uri(URI("https://api.dropbox.com/oauth2/token"))
+            .POST(HttpRequest.BodyPublishers.ofString(body))
+            .build()
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
         val responseText: String = response.body()

@@ -1,7 +1,6 @@
 package de.sroeck.tracksbackend.fit2gpx
 
 import com.garmin.fit.Sport
-import convertToGpx
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -23,7 +22,7 @@ class ParseFitKtTest {
     @Test
     fun parseFitFile() {
         val res = parseFitFile(sampleFitFileAsBytes())
-        val (fitDataPoints, fitSession) = res;
+        val (fitDataPoints, fitSession) = res
         assertThat(fitDataPoints).hasSize(22045)
 
         assertThat(fitDataPoints[0].lat).isEqualTo(579288959)
@@ -46,10 +45,13 @@ class ParseFitKtTest {
     fun convertToGpx() {
         val fitData = parseFitFile(sampleFitFileAsBytes())
 
-        val gpxXmlString = convertToGpx(fitData, "Imported File")
+        val gpxData = convertFitToGpx(fitData)
+        val gpxXmlString = convertGpxToString(gpxData)
 
+        assertThat(gpxData.name).isEqualTo("Walking")
+        assertThat(gpxData.desc).isEqualTo("name=Walking time=2023-12-17T08:28:39Z")
         assertThat(gpxXmlString).startsWith("<gpx xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
 
-        assertThat(gpxXmlString).isEqualTo(sampleGpxFileAsString());
+        assertThat(gpxXmlString).isEqualTo(sampleGpxFileAsString())
     }
 }

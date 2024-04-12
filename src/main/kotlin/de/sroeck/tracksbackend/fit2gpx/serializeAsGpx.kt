@@ -1,7 +1,8 @@
+package de.sroeck.tracksbackend.fit2gpx
+
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.garmin.fit.DateTime
-import de.sroeck.tracksbackend.fit2gpx.FitData
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.pow
@@ -18,16 +19,31 @@ private fun formatFitDate(datetime: DateTime): String {
     return DateTimeFormatter.ISO_ZONED_DATE_TIME.withZone(ZoneId.of("Z")).format(datetime.date.toInstant())
 }
 
+
 private fun semicirclesToDegrees(semicircles: Int): Double {
-    return semicircles * ( 180 / 2.0.pow(31.0))
+    return semicircles * (180 / 2.0.pow(31.0))
 }
 
-fun convertToGpx(fitData: FitData, name: String): String {
-    val trkPoints = fitData.fitDataPoints.map { GpxTrkPt(semicirclesToDegrees(it.lat), semicirclesToDegrees(it.lon), it.altitude?.toInt(), formatFitDate(it.timestamp)) }
+fun convertFitToGpx(fitData: FitData): GpxTrk {
+    val trkPoints = fitData.fitDataPoints.map {
+        GpxTrkPt(
+            semicirclesToDegrees(it.lat),
+            semicirclesToDegrees(it.lon),
+            it.altitude?.toInt(),
+            formatFitDate(it.timestamp)
+        )
+    }
+    val name = titleCase(fitData.fitSession.sport.name)
+    val description = "name=${name} time=${formatFitDate(fitData.fitSession.startTime)}"
+    return GpxTrk(name, description, trkPoints)
+}
 
-    val track = GpxTrk(name, trkPoints)
+fun titleCase(name: String): String {
+    return name.first().uppercase() + name.substring(1).lowercase()
+}
 
+fun convertGpxToString(gpxTrk: GpxTrk): String {
     val xmlMapper = XmlMapper()
-    xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
-    return GPX_HEADER + xmlMapper.writeValueAsString(track) + GPX_FOOTER
+    xmlMapper.enable(SerializationFeature.INDENT_OUTPUT)
+    return GPX_HEADER + xmlMapper.writeValueAsString(gpxTrk) + GPX_FOOTER
 }
