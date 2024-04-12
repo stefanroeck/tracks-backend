@@ -6,10 +6,10 @@ A Kotlin/JVM based backend to expose my hiking tracks to the frontend applicatio
 and https://github.com/stefanroeck/gpxtracks)
 This app will roughly do the following
 
-- Search for tagged hiking tracks in my Dropbox account (tag *#longdistancewalk*)
-- Convert the raw FIT files to GPX (or similar format)
+- :white_check_mark: Search for tagged hiking tracks in my Dropbox account (tag *#longdistancewalk*)
+- :white_check_mark: Convert the raw FIT files to GPX
 - Process the track data for single usage (elevation view) and bulk data (map overview)
-- Make this performant, e.g. by leveraging some caching
+- :grey_question: Make this performant, e.g. by leveraging some caching
 
 # Development
 
@@ -19,10 +19,26 @@ This app will roughly do the following
 
 ### Deployment
 
-The following configuration parameters need to be provided
+## Application
 
-| Parameter Name       |
-|:---------------------|
-| dropbox.clientId     |
-| dropbox.secret       |
-| dropbox.refreshToken |
+The following configuration parameters need to be provided to run the application
+
+| Parameter Name          |
+|:------------------------|
+| dropbox.clientId        |
+| dropbox.secret          |
+| dropbox.refreshToken    |
+| spring.data.mongodb.uri |
+
+## Mongo DB
+
+The following environment variables are needed by the MongoDB Container
+
+| Parameter Name             |
+|:---------------------------|
+| MONGO_INITDB_ROOT_USERNAME |
+| MONGO_INITDB_ROOT_PASSWORD |
+| MONGO_INITDB_DATABASE      |
+| MONGO_USER                 |
+| MONGO_PASSWORD             |
+| MONGO_DB                   |
