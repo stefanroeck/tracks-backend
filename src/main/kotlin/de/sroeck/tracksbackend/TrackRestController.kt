@@ -22,6 +22,6 @@ class TrackRestController(val trackService: TrackService) {
 
     @GetMapping("/tracks/{id}/gpx", produces = ["application/xml"])
     fun downloadTrack(@PathVariable id: String): GpxTrk? {
-        return trackService.getTrackGpxData(id)
+        return trackService.getTrackGpxData(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 }

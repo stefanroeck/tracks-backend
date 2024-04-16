@@ -1,5 +1,6 @@
 package de.sroeck.tracksbackend
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import de.sroeck.tracksbackend.fit2gpx.GpxTrk
 import org.springframework.data.annotation.Id
 import org.springframework.data.repository.CrudRepository
@@ -10,7 +11,7 @@ data class TrackEntity(
     val trackName: String,
     val dropboxId: String,
     val trackTimestamp: Instant,
-    val gpxData: GpxTrk
+    @JsonIgnore val gpxData: GpxTrk
 )
 
 interface TrackRepository : CrudRepository<TrackEntity, String> {
