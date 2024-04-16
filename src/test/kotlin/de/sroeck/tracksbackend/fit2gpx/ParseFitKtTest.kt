@@ -1,8 +1,11 @@
 package de.sroeck.tracksbackend.fit2gpx
 
+import com.garmin.fit.DateTime
 import com.garmin.fit.Sport
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.Instant
+import java.util.*
 
 
 class ParseFitKtTest {
@@ -27,12 +30,12 @@ class ParseFitKtTest {
 
         assertThat(fitDataPoints[0].lat).isEqualTo(579288959)
         assertThat(fitDataPoints[0].lon).isEqualTo(104129988)
-        assertThat(fitDataPoints[0].timestamp.toString()).isEqualTo("Sun Dec 17 09:28:40 CET 2023")
+        assertThat(fitDataPoints[0].timestamp.equals(DateTime(Date.from(Instant.parse("2023-12-17T08:28:40Z")))))
         assertThat(fitDataPoints[0].altitude).isNull()
         assertThat(fitDataPoints[0].heartRate).isEqualTo(112)
 
         assertThat(fitSession.sport).isEqualTo(Sport.WALKING)
-        assertThat(fitSession.startTime.toString()).isEqualTo("Sun Dec 17 09:28:39 CET 2023")
+        assertThat(fitSession.startTime.equals(DateTime(Date.from(Instant.parse("2023-12-17T08:28:39Z")))))
         assertThat(fitSession.totalAscent).isEqualTo(886)
         assertThat(fitSession.totalDescent).isEqualTo(620)
         assertThat(fitSession.totalCalories).isEqualTo(1593)
