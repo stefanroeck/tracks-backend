@@ -19,6 +19,8 @@ This app will roughly do the following
 
 ### Deployment
 
+- Browser APIs at http://localhost:8082/swagger-ui/index.html
+
 ## Application
 
 The following configuration parameters need to be provided to run the application

@@ -1,13 +1,12 @@
 package de.sroeck.tracksbackend
 
-import de.sroeck.tracksbackend.fit2gpx.GpxTrk
+import de.sroeck.tracksbackend.fit2gpx.convertGpxToString
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
+@CrossOrigin(origins = ["http://localhost:8080", "https://gpxtracks.vercel.app/"])
 class TrackRestController(val trackService: TrackService) {
 
     @GetMapping("/tracks", produces = ["application/json"])
@@ -21,7 +20,14 @@ class TrackRestController(val trackService: TrackService) {
     }
 
     @GetMapping("/tracks/{id}/gpx", produces = ["application/xml"])
-    fun downloadTrack(@PathVariable id: String): GpxTrk? {
-        return trackService.getTrackGpxData(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    fun downloadTrack(@PathVariable id: String): String? {
+        val gpxData = trackService.getTrackGpxData(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        return convertGpxToString(gpxData)
+    }
+
+    @DeleteMapping("/tracks")
+    fun deleteAllTracks() {
+        trackService.deleteAllTracks()
+        trackService.fetchTracksFromDropboxAndPersistThem()
     }
 }

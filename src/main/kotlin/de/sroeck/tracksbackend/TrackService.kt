@@ -30,6 +30,10 @@ class TrackService(
         return getTrack(id)?.gpxData
     }
 
+    fun deleteAllTracks() {
+        trackRepository.deleteAll()
+    }
+
     fun fetchTracksFromDropboxAndPersistThem() {
         val knownDropboxIds = trackRepository.findAll().map { it.dropboxId }.toSet()
         println("Already persisted tracks: ${knownDropboxIds.size}")
