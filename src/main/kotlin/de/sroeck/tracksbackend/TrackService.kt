@@ -42,13 +42,14 @@ class TrackService(
         println("New Tracks from Dropbox: ${newDropboxTracks.size}")
 
         newDropboxTracks.forEach { dropboxTrack ->
-            println("Processing track ${dropboxTrack.id} / ${dropboxTrack.path}")
+            println("Processing track ${dropboxTrack.id} / ${dropboxTrack.path} / ${dropboxTrack.name}")
             val bytes = dropboxApi.downloadTrack(dropboxTrack.path)
             println("Downloaded ${bytes.size / 1024}kb")
             val fitData = fitGpxService.parseAsFit(bytes)
             val trackTimestamp = fitData.fitSession.trackTimestamp()
-            val gpxTrack = fitGpxService.convertToGpx(fitData)
-            val entity = TrackEntity(trackId(trackTimestamp), gpxTrack.name, dropboxTrack.id, trackTimestamp, gpxTrack)
+            val gpxTrack = fitGpxService.convertToGpx(fitData, dropboxTrack.name.replace(".fit", ""))
+            val entity =
+                TrackEntity(trackId(trackTimestamp), gpxTrack.name, dropboxTrack.id, trackTimestamp, gpxTrack)
 
             println("Persisting new track id:${entity.trackId} name:${entity.trackName} timstamp:${entity.trackTimestamp}")
             trackRepository.save(entity)

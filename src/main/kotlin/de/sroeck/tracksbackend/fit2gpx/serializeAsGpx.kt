@@ -24,7 +24,7 @@ private fun semicirclesToDegrees(semicircles: Int): Double {
     return semicircles * (180 / 2.0.pow(31.0))
 }
 
-fun convertFitToGpx(fitData: FitData): GpxTrk {
+fun convertFitToGpx(fitData: FitData, activityName: String): GpxTrk {
     val trkPoints = fitData.fitDataPoints
         .filter { it.altitude !== null }
         .map {
@@ -35,9 +35,9 @@ fun convertFitToGpx(fitData: FitData): GpxTrk {
                 formatFitDate(it.timestamp)
             )
         }
-    val name = titleCase(fitData.fitSession.sport.name)
-    val description = "name=${name} time=${formatFitDate(fitData.fitSession.startTime)}"
-    return GpxTrk(name, description, trkPoints)
+    val sport = titleCase(fitData.fitSession.sport.name)
+    val description = "activity=${sport} name=${activityName} time=${formatFitDate(fitData.fitSession.startTime)}"
+    return GpxTrk(activityName, description, trkPoints)
 }
 
 fun titleCase(name: String): String {

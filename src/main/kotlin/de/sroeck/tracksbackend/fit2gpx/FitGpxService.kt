@@ -9,7 +9,7 @@ class FitGpxService {
         return parseFitFile(byteArray)
     }
 
-    fun convertToGpx(fitData: FitData): GpxTrk {
-        return convertFitToGpx(fitData)
+    fun convertToGpx(fitData: FitData, activityName: String): GpxTrk {
+        return convertFitToGpx(fitData, activityName)
     }
 }

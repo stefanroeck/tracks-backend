@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 
+/** Data class representing a GPX track, according to gpx.xsd, see https://www.topografix.com/gpx.asp */
 @JacksonXmlRootElement(localName = "trk")
 data class GpxTrk(
     val name: String,
