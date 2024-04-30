@@ -19,7 +19,7 @@ services:
     logging:
       options:
         max-size: 1g
-    env_file: [ .env ]
+    env_file: [ .env, ./config/application.properties ]
     build:
       dockerfile: ./scripts/docker/Dockerfile
     ports:

@@ -1,4 +1,4 @@
 .idea
 target
-/src/main/resources/secrets.properties
+/config/application.properties
 .env*

@@ -5,7 +5,7 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.PropertySource
 
 @SpringBootApplication
-@PropertySource("classpath:application.properties", "classpath:secrets.properties")
+@PropertySource("classpath:application.properties")
 class TracksBackendApplication
 
 fun main(args: Array<String>) {
