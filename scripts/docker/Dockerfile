@@ -1,3 +1,8 @@
+FROM eclipse-temurin:21-jdk-alpine as build
+COPY . /usr/app
+WORKDIR /usr/app
+RUN chmod +x mvnw && ./mvnw clean package
+
 # Dockerfile to run a Spring Boot Kotlin application
 FROM eclipse-temurin:21-jre-alpine
 
@@ -8,7 +13,7 @@ LABEL maintainer="stefan.roeck@gmail.com"
 RUN addgroup -S spring && adduser -S spring -G spring
 
 ## copy the spring jar
-COPY target/tracks-backend-*.jar /opt/tracks-backend.jar
+COPY --from=build /usr/app/target/tracks-backend-*.jar /opt/tracks-backend.jar
 
 # Add a volume pointing to /tmp
 VOLUME /tmp
