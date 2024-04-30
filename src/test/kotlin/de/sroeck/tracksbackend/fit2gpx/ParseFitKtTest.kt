@@ -48,11 +48,11 @@ class ParseFitKtTest {
     fun convertToGpx() {
         val fitData = parseFitFile(sampleFitFileAsBytes())
 
-        val gpxData = convertFitToGpx(fitData)
+        val gpxData = convertFitToGpx(fitData, "Walk in the park")
         val gpxXmlString = convertGpxToString(gpxData)
 
-        assertThat(gpxData.name).isEqualTo("Walking")
-        assertThat(gpxData.desc).isEqualTo("name=Walking time=2023-12-17T08:28:39Z")
+        assertThat(gpxData.name).isEqualTo("Walk in the park")
+        assertThat(gpxData.desc).isEqualTo("activity=Walking name=Walk in the park time=2023-12-17T08:28:39Z")
         assertThat(gpxXmlString).startsWith("<gpx xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"")
 
         assertThat(gpxXmlString).isEqualTo(sampleGpxFileAsString())

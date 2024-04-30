@@ -2,8 +2,8 @@
      xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1"
      creator="gpx-backend">
 <trk>
-  <name>Walking</name>
-  <desc>name=Walking time=2023-12-17T08:28:39Z</desc>
+  <name>Walk in the park</name>
+  <desc>activity=Walking name=Walk in the park time=2023-12-17T08:28:39Z</desc>
   <trkseg>
     <trkpt lat="48.555254051461816" lon="8.72803227044642">
       <ele>423</ele>
