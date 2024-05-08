@@ -1,9 +1,12 @@
 package de.sroeck.tracksbackend
 
 import de.sroeck.tracksbackend.fit2gpx.convertGpxToString
+import org.springframework.http.CacheControl
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.time.Duration.ofDays
 
 @RestController
 @CrossOrigin(origins = ["http://localhost:8080", "https://gpxtracks.vercel.app/"])
@@ -20,9 +23,12 @@ class TrackRestController(val trackService: TrackService) {
     }
 
     @GetMapping("/tracks/{id}/gpx", produces = ["application/xml"])
-    fun downloadTrack(@PathVariable id: String): String? {
+    @ResponseBody
+    fun downloadTrack(@PathVariable id: String): ResponseEntity<String>? {
         val gpxData = trackService.getTrackGpxData(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
-        return convertGpxToString(gpxData)
+        return ResponseEntity.ok()
+            .cacheControl(CacheControl.maxAge(ofDays(30)))
+            .body(convertGpxToString(gpxData))
     }
 
     @DeleteMapping("/tracks")
