@@ -11,7 +11,9 @@ data class TrackEntity(
     val trackName: String,
     val dropboxId: String,
     val trackTimestamp: Instant,
-    @JsonIgnore val gpxData: GpxTrk
+    @JsonIgnore val gpxDataOriginal: GpxTrk,
+    @JsonIgnore val gpxDataPreview: GpxTrk, // reduced set of points
+    @JsonIgnore val gpxDataDetail: GpxTrk, // more detailed set of points
 )
 
 interface TrackRepository : CrudRepository<TrackEntity, String> {

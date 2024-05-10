@@ -3,6 +3,8 @@ package de.sroeck.tracksbackend
 import de.sroeck.tracksbackend.dropbox.DropboxApi
 import de.sroeck.tracksbackend.fit2gpx.FitGpxService
 import de.sroeck.tracksbackend.fit2gpx.GpxTrk
+import de.sroeck.tracksbackend.gpxreduce.GpxReduceService
+import de.sroeck.tracksbackend.gpxreduce.ReduceSize
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -14,10 +16,11 @@ class TrackService(
     @Autowired private val trackRepository: TrackRepository,
     @Autowired private val dropboxApi: DropboxApi,
     @Autowired private val fitGpxService: FitGpxService,
+    @Autowired private val gpxReduceService: GpxReduceService,
 ) {
 
     fun listAll(): List<TrackEntity> {
-        fetchTracksFromDropboxAndPersistThem()
+        fetchNewTracksFromDropboxAndPersistThem()
 
         return trackRepository.findAll().toList()
     }
@@ -26,15 +29,19 @@ class TrackService(
         return trackRepository.findById(id).orElse(null)
     }
 
-    fun getTrackGpxData(id: String): GpxTrk? {
-        return getTrack(id)?.gpxData
+    fun getTrackDetailGpxData(id: String): GpxTrk? {
+        return getTrack(id)?.gpxDataDetail
+    }
+
+    fun getTrackPreviewGpxData(id: String): GpxTrk? {
+        return getTrack(id)?.gpxDataPreview
     }
 
     fun deleteAllTracks() {
         trackRepository.deleteAll()
     }
 
-    fun fetchTracksFromDropboxAndPersistThem() {
+    fun fetchNewTracksFromDropboxAndPersistThem() {
         val knownDropboxIds = trackRepository.findAll().map { it.dropboxId }.toSet()
         println("Already persisted tracks: ${knownDropboxIds.size}")
 
@@ -48,8 +55,20 @@ class TrackService(
             val fitData = fitGpxService.parseAsFit(bytes)
             val trackTimestamp = fitData.fitSession.trackTimestamp()
             val gpxTrack = fitGpxService.convertToGpx(fitData, dropboxTrack.name.replace(".fit", ""))
+
+            val gpxTrackPreview = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.SMALL)
+            val gpxTrackDetail = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.LARGE)
+            println("Reduced #points for track ${gpxTrack.name} (${gpxTrack.trkseg.size}) to preview (${gpxTrackPreview.trkseg.size}) and detail (${gpxTrackDetail.trkseg.size})")
             val entity =
-                TrackEntity(trackId(trackTimestamp), gpxTrack.name, dropboxTrack.id, trackTimestamp, gpxTrack)
+                TrackEntity(
+                    trackId(trackTimestamp),
+                    gpxTrack.name,
+                    dropboxTrack.id,
+                    trackTimestamp,
+                    gpxTrack,
+                    gpxTrackPreview,
+                    gpxTrackDetail
+                )
 
             println("Persisting new track id:${entity.trackId} name:${entity.trackName} timstamp:${entity.trackTimestamp}")
             trackRepository.save(entity)
