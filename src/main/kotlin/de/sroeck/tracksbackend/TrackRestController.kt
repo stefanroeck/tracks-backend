@@ -13,9 +13,21 @@ import java.time.Duration.ofDays
 @CrossOrigin(origins = ["http://localhost:8080", "https://gpxtracks.vercel.app/"])
 class TrackRestController(val trackService: TrackService) {
 
+    data class TrackBounds(val minLat: Double, val maxLat: Double, val minLon: Double, val maxLon: Double)
+    data class AllTracksResponse(val tracks: List<TrackEntity>, val allTrackBounds: TrackBounds)
+
     @GetMapping("/tracks", produces = ["application/json"])
-    fun getTracks(): List<TrackEntity> {
-        return trackService.listAll()
+    fun getTracks(): AllTracksResponse {
+        val allTracks = trackService.listAll()
+        val bounds = allTracks.map { it.bounds }
+        val trackBounds = TrackBounds(
+            bounds.minOf { it.minLat },
+            bounds.maxOf { it.maxLat },
+            bounds.minOf { it.minLon },
+            bounds.maxOf { it.maxLon }
+        )
+
+        return AllTracksResponse(allTracks, trackBounds)
     }
 
     @GetMapping("/tracks/{id}", produces = ["application/json"])

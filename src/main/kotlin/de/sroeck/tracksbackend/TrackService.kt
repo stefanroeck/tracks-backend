@@ -57,7 +57,7 @@ class TrackService(
             val gpxTrack = fitGpxService.convertToGpx(fitData, dropboxTrack.name.replace(".fit", ""))
 
             val gpxTrackPreview = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.SMALL)
-            val gpxTrackDetail = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.LARGE)
+            val gpxTrackDetail = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.MEDIUM)
             println("Reduced #points for track ${gpxTrack.name} (${gpxTrack.trkseg.size}) to preview (${gpxTrackPreview.trkseg.size}) and detail (${gpxTrackDetail.trkseg.size})")
             val entity =
                 TrackEntity(
