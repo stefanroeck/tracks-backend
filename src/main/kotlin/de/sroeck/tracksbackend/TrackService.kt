@@ -54,7 +54,8 @@ class TrackService(
             println("Downloaded ${bytes.size / 1024}kb")
             val fitData = fitGpxService.parseAsFit(bytes)
             val trackTimestamp = fitData.fitSession.trackTimestamp()
-            val gpxTrack = fitGpxService.convertToGpx(fitData, dropboxTrack.name.replace(".fit", ""))
+            val trackName = removeTimestamp(dropboxTrack.name.replace(".fit", ""))
+            val gpxTrack = fitGpxService.convertToGpx(fitData, trackName)
 
             val gpxTrackPreview = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.SMALL)
             val gpxTrackDetail = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.MEDIUM)
@@ -73,6 +74,15 @@ class TrackService(
             println("Persisting new track id:${entity.trackId} name:${entity.trackName} timstamp:${entity.trackTimestamp}")
             trackRepository.save(entity)
         }
+    }
+
+    // 2024-05-09 08:17 Neckarsteig, Etappe 3 und 4
+    private fun removeTimestamp(dropboxName: String): String {
+        val regex = Regex("(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}) (.*)")
+        if (regex.containsMatchIn(dropboxName)) {
+            return regex.find(dropboxName)!!.groupValues[2]
+        }
+        return dropboxName
     }
 
     private fun trackId(trackTimestamp: Instant): String {
