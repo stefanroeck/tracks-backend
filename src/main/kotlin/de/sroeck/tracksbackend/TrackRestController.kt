@@ -14,7 +14,7 @@ import java.time.Duration.ofDays
 class TrackRestController(val trackService: TrackService) {
 
     data class TrackBounds(val minLat: Double, val maxLat: Double, val minLon: Double, val maxLon: Double)
-    data class AllTracksResponse(val tracks: List<TrackEntity>, val allTrackBounds: TrackBounds)
+    data class AllTracksResponse(val tracks: List<TrackMetaData>, val allTrackBounds: TrackBounds)
 
     @GetMapping("/tracks", produces = ["application/json"])
     fun getTracks(): AllTracksResponse {

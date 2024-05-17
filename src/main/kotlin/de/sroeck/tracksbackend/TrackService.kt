@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.time.measureTime
+import kotlin.time.measureTimedValue
 
 @Service
 class TrackService(
@@ -19,14 +21,17 @@ class TrackService(
     @Autowired private val gpxReduceService: GpxReduceService,
 ) {
 
-    fun listAll(): List<TrackEntity> {
-        fetchNewTracksFromDropboxAndPersistThem()
+    fun listAll(): List<TrackMetaData> {
+        val elapsed = measureTime {
+            fetchNewTracksFromDropboxAndPersistThem()
+        }
+        println("Syncing tracks with Dropbox took ${elapsed.inWholeMilliseconds}ms")
 
         return trackRepository.findAll().toList()
     }
 
     fun getTrack(id: String): TrackEntity? {
-        return trackRepository.findById(id).orElse(null)
+        return trackRepository.findById(id)
     }
 
     fun getTrackDetailGpxData(id: String): GpxTrk? {
@@ -42,11 +47,13 @@ class TrackService(
     }
 
     fun fetchNewTracksFromDropboxAndPersistThem() {
-        val knownDropboxIds = trackRepository.findAll().map { it.dropboxId }.toSet()
-        println("Already persisted tracks: ${knownDropboxIds.size}")
+        val existingTracks = measureTimedValue { trackRepository.findAll() }
+        val knownDropboxIds = existingTracks.value.map { it.dropboxId }.toSet()
+        println("Reading ${knownDropboxIds.size} already persisted tracks from mongodb took ${existingTracks.duration.inWholeMilliseconds}ms")
 
-        val newDropboxTracks = dropboxApi.fetchTracks().filterNot { knownDropboxIds.contains(it.id) }
-        println("New Tracks from Dropbox: ${newDropboxTracks.size}")
+        val dropboxTracks = measureTimedValue { dropboxApi.fetchTracks() }
+        val newDropboxTracks = dropboxTracks.value.filterNot { knownDropboxIds.contains(it.id) }
+        println("Identifying ${newDropboxTracks.size} new Tracks from Dropbox took ${dropboxTracks.duration.inWholeMilliseconds}ms")
 
         newDropboxTracks.forEach { dropboxTrack ->
             println("Processing track ${dropboxTrack.id} / ${dropboxTrack.path} / ${dropboxTrack.name}")

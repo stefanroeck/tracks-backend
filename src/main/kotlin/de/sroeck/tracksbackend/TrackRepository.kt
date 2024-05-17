@@ -3,7 +3,8 @@ package de.sroeck.tracksbackend
 import com.fasterxml.jackson.annotation.JsonIgnore
 import de.sroeck.tracksbackend.fit2gpx.GpxTrk
 import org.springframework.data.annotation.Id
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.mongodb.repository.Query
+import org.springframework.data.repository.Repository
 import java.time.Instant
 
 data class Bounds(val minLat: Double, val maxLat: Double, val minLon: Double, val maxLon: Double)
@@ -16,16 +17,24 @@ private fun boundsFrom(gpxTrack: GpxTrk): Bounds {
     return Bounds(minLat, maxLat, minLon, maxLon)
 }
 
-data class TrackEntity(
-    @Id val trackId: String,
-    val trackName: String,
-    val dropboxId: String,
-    val trackTimestamp: Instant,
-    val bounds: Bounds,
-    @JsonIgnore val gpxDataOriginal: GpxTrk,
-    @JsonIgnore val gpxDataPreview: GpxTrk, // reduced set of points
-    @JsonIgnore val gpxDataDetail: GpxTrk, // more detailed set of points
-) {
+interface TrackMetaData {
+    val trackId: String
+    val trackName: String
+    val dropboxId: String
+    val trackTimestamp: Instant
+    val bounds: Bounds
+}
+
+class TrackEntity(
+    @Id override val trackId: String,
+    override val trackName: String,
+    override val dropboxId: String,
+    override val trackTimestamp: Instant,
+    override val bounds: Bounds,
+    @JsonIgnore val gpxDataOriginal: GpxTrk?,
+    @JsonIgnore val gpxDataPreview: GpxTrk?, // reduced set of points
+    @JsonIgnore val gpxDataDetail: GpxTrk?, // more detailed set of points
+) : TrackMetaData {
     constructor(
         trackId: String,
         trackName: String,
@@ -46,5 +55,10 @@ data class TrackEntity(
     )
 }
 
-interface TrackRepository : CrudRepository<TrackEntity, String> {
+interface TrackRepository : Repository<TrackEntity, String> {
+    @Query(value = "{}", fields = "{'trackId': 1, 'trackName': 1, 'dropboxId': 1, 'trackTimestamp': 1, 'bounds': 1}")
+    fun findAll(): List<TrackMetaData>
+    fun findById(id: String): TrackEntity?
+    fun deleteAll()
+    fun save(track: TrackEntity): TrackEntity
 }
