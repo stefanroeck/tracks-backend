@@ -8,8 +8,10 @@ This app will roughly do the following
 
 - :white_check_mark: Search for tagged hiking tracks in my Dropbox account (tag *#longdistancewalk*)
 - :white_check_mark: Convert the raw FIT files to GPX
-- Process the track data for single usage (elevation view) and bulk data (map overview)
-- :grey_question: Make this performant, e.g. by leveraging some caching
+- :white_check_mark: Process the track data for single usage (elevation view) and bulk data (map overview)
+- :white_check_mark: Make this performant, e.g. by leveraging some caching
+- Also older process TCX files from Dropbox
+- Fetch Weather data and store in Mongo instead of fetching in UI
 
 # Development
 
