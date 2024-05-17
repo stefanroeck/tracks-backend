@@ -18,7 +18,7 @@ class DropboxApi(
 ) {
 
     private class AccessToken(val accessToken: String, expiresIn: Long) {
-        private val expiresAt = Instant.now().plusMillis(expiresIn)
+        private val expiresAt = Instant.now().plusSeconds(expiresIn)
 
         fun expired() = Instant.now().isAfter(expiresAt)
     }
