@@ -15,7 +15,7 @@
     <description>Backend exposing my hiking tracks</description>
     <properties>
         <java.version>21</java.version>
-        <kotlin.version>1.9.23</kotlin.version>
+        <kotlin.version>2.1.10</kotlin.version>
     </properties>
     <dependencies>
         <dependency>
