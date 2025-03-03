@@ -1,10 +1,14 @@
 package de.sroeck.tracksbackend
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import de.sroeck.tracksbackend.fit2gpx.GpxTrk
 import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.repository.Query
-import org.springframework.data.repository.Repository
+import org.springframework.data.annotation.Transient
+import org.springframework.data.relational.core.mapping.Embedded
+import org.springframework.data.relational.core.mapping.Table
+import org.springframework.data.repository.CrudRepository
 import java.time.Instant
 
 data class Bounds(val minLat: Double, val maxLat: Double, val minLon: Double, val maxLon: Double)
@@ -25,15 +29,18 @@ interface TrackMetaData {
     val bounds: Bounds
 }
 
+@Table(name = "TRACK")
 class TrackEntity(
-    @Id override val trackId: String,
+    @Id
+    val internalTrackId: Int? = null,
+    override val trackId: String,
     override val trackName: String,
     override val dropboxId: String,
     override val trackTimestamp: Instant,
-    override val bounds: Bounds,
-    @JsonIgnore val gpxDataOriginal: GpxTrk?,
-    @JsonIgnore val gpxDataPreview: GpxTrk?, // reduced set of points
-    @JsonIgnore val gpxDataDetail: GpxTrk?, // more detailed set of points
+    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL) override val bounds: Bounds,
+    @JsonIgnore val gpxDataOriginalXml: String?,
+    @JsonIgnore val gpxDataPreviewXml: String?, // reduced set of points
+    @JsonIgnore val gpxDataDetailXml: String?, // more detailed set of points
 ) : TrackMetaData {
     constructor(
         trackId: String,
@@ -44,21 +51,41 @@ class TrackEntity(
         gpxDataPreview: GpxTrk,
         gpxDataDetail: GpxTrk,
     ) : this(
-        trackId,
-        trackName,
-        dropboxId,
-        trackTimestamp,
-        boundsFrom(gpxDataPreview),
-        gpxDataOriginal,
-        gpxDataPreview,
-        gpxDataDetail
+        internalTrackId = null,
+        trackId = trackId,
+        trackName = trackName,
+        dropboxId = dropboxId,
+        trackTimestamp = trackTimestamp,
+        bounds = boundsFrom(gpxDataPreview),
+        gpxDataOriginalXml = xmlMapper.writeValueAsString(gpxDataOriginal),
+        gpxDataPreviewXml = xmlMapper.writeValueAsString(gpxDataPreview),
+        gpxDataDetailXml = xmlMapper.writeValueAsString(gpxDataDetail),
     )
+
+    @JsonIgnore
+    @Transient
+    val gpxDataOriginal: GpxTrk? = null
+        get() = field ?: gpxDataOriginalXml?.let {
+            xmlMapper.readValue<GpxTrk>(it)
+        }
+
+    @JsonIgnore
+    @Transient
+    val gpxDataPreview: GpxTrk? = null
+        get() = field ?: gpxDataPreviewXml?.let {
+            xmlMapper.readValue<GpxTrk>(it)
+        }
+
+    @JsonIgnore
+    @Transient
+    val gpxDataDetail: GpxTrk? = null
+        get() = field ?: gpxDataDetailXml?.let {
+            xmlMapper.readValue<GpxTrk>(it)
+        }
+
+    companion object {
+        private val xmlMapper = XmlMapper()
+    }
 }
 
-interface TrackRepository : Repository<TrackEntity, String> {
-    @Query(value = "{}", fields = "{'trackId': 1, 'trackName': 1, 'dropboxId': 1, 'trackTimestamp': 1, 'bounds': 1}")
-    fun findAll(): List<TrackMetaData>
-    fun findById(id: String): TrackEntity?
-    fun deleteAll()
-    fun save(track: TrackEntity): TrackEntity
-}
+interface TrackRepository : CrudRepository<TrackEntity, String>

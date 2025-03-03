@@ -31,7 +31,7 @@ class TrackService(
     }
 
     fun getTrack(id: String): TrackEntity? {
-        return trackRepository.findById(id)
+        return trackRepository.findById(id).orElse(null)
     }
 
     fun getTrackDetailGpxData(id: String): GpxTrk? {
@@ -49,7 +49,7 @@ class TrackService(
     fun fetchNewTracksFromDropboxAndPersistThem() {
         val existingTracks = measureTimedValue { trackRepository.findAll() }
         val knownDropboxIds = existingTracks.value.map { it.dropboxId }.toSet()
-        println("Reading ${knownDropboxIds.size} already persisted tracks from mongodb took ${existingTracks.duration.inWholeMilliseconds}ms")
+        println("Reading ${knownDropboxIds.size} already persisted tracks from database took ${existingTracks.duration.inWholeMilliseconds}ms")
 
         val dropboxTracks = measureTimedValue { dropboxApi.fetchTracks() }
         val newDropboxTracks = dropboxTracks.value.filterNot { knownDropboxIds.contains(it.id) }
@@ -78,7 +78,7 @@ class TrackService(
                     gpxTrackDetail
                 )
 
-            println("Persisting new track id:${entity.trackId} name:${entity.trackName} timstamp:${entity.trackTimestamp}")
+            println("Persisting new track id:${entity.trackId} name:${entity.trackName} timestamp:${entity.trackTimestamp}")
             trackRepository.save(entity)
         }
     }

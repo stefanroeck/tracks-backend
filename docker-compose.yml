@@ -1,18 +1,5 @@
 version: '3.3'
 services:
-  mongo:
-    ports:
-      - '27017:27017'
-    container_name: mongo-db
-    restart: unless-stopped
-    logging:
-      options:
-        max-size: 1g
-    env_file: [ .env-mongo, .env ]
-    image: mongo:7.0.8
-    volumes:
-      - mongo:/data/db
-      - ./scripts/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
   tracks-backend:
     image: stefanroeck/tracks-backend
     container_name: tracks-backend
@@ -20,14 +7,13 @@ services:
     logging:
       options:
         max-size: 1g
-    env_file: [ .env, ./config/application.properties ]
+    env_file: [ ./config/application.properties ]
     build:
       dockerfile: ./scripts/docker/Dockerfile
     ports:
       - '8082:8082'
-    environment:
-      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/tracksdb
-    depends_on:
-      - mongo
+    volumes:
+      - h2-data:/data/db
 volumes:
-  mongo:
+  h2-data:
+    driver: local

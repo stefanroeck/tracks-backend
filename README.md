@@ -10,8 +10,10 @@ This app will roughly do the following
 - :white_check_mark: Convert the raw FIT files to GPX
 - :white_check_mark: Process the track data for single usage (elevation view) and bulk data (map overview)
 - :white_check_mark: Make this performant, e.g. by leveraging some caching
+- :white_check_mark: Switch from Mongo to lightweight DB and write DB Integration tests
 - Also older process TCX files from Dropbox
-- Fetch Weather data and store in Mongo instead of fetching in UI
+- Fetch Weather data and store in DB instead of fetching in UI
+- Migrate to Gradle for faster builds
 
 # Development
 
@@ -27,22 +29,10 @@ This app will roughly do the following
 
 The following configuration parameters need to be provided to run the application
 
-| Parameter Name          |
-|:------------------------|
-| dropbox.clientId        |
-| dropbox.secret          |
-| dropbox.refreshToken    |
-| spring.data.mongodb.uri |
-
-## Mongo DB
-
-The following environment variables are needed by the MongoDB Container
-
-| Parameter Name             |
-|:---------------------------|
-| MONGO_INITDB_ROOT_USERNAME |
-| MONGO_INITDB_ROOT_PASSWORD |
-| MONGO_INITDB_DATABASE      |
-| MONGO_USER                 |
-| MONGO_PASSWORD             |
-| MONGO_DB                   |
+| Parameter Name       |
+|:---------------------|
+| dropbox.clientId     |
+| dropbox.secret       |
+| dropbox.refreshToken |
+| db.username          |
+| db.password          |
