@@ -1,7 +1,5 @@
 package de.sroeck.tracksbackend
 
-import de.sroeck.tracksbackend.fit2gpx.GpxTrk
-import de.sroeck.tracksbackend.fit2gpx.convertGpxToString
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -47,15 +45,20 @@ class TrackRestController(val trackService: TrackService) {
         return gpxXmlResponse { trackService.getTrackPreviewGpxData(id) }
     }
 
-    private fun gpxXmlResponse(loader: () -> GpxTrk?): ResponseEntity<String> {
+    private fun gpxXmlResponse(loader: () -> String?): ResponseEntity<String> {
         val gpxData = loader() ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
         return ResponseEntity.ok()
             .cacheControl(CacheControl.maxAge(ofDays(30)))
-            .body(convertGpxToString(gpxData))
+            .body(gpxData)
     }
 
     @DeleteMapping("/tracks")
     fun deleteAllTracks() {
         trackService.deleteAllTracks()
+    }
+
+    @PostMapping("/tracks/sync")
+    fun syncTracks() {
+        trackService.fetchNewTracksFromDropboxAndPersistThem()
     }
 }

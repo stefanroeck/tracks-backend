@@ -1,15 +1,14 @@
 package de.sroeck.tracksbackend
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import de.sroeck.tracksbackend.fit2gpx.GpxTrk
+import de.sroeck.tracksbackend.fit2gpx.convertGpxToString
 import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.Transient
 import org.springframework.data.relational.core.mapping.Embedded
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.CrudRepository
 import java.time.Instant
+import java.util.*
 
 data class Bounds(val minLat: Double, val maxLat: Double, val minLon: Double, val maxLon: Double)
 
@@ -57,35 +56,12 @@ class TrackEntity(
         dropboxId = dropboxId,
         trackTimestamp = trackTimestamp,
         bounds = boundsFrom(gpxDataPreview),
-        gpxDataOriginalXml = xmlMapper.writeValueAsString(gpxDataOriginal),
-        gpxDataPreviewXml = xmlMapper.writeValueAsString(gpxDataPreview),
-        gpxDataDetailXml = xmlMapper.writeValueAsString(gpxDataDetail),
+        gpxDataOriginalXml = convertGpxToString(gpxDataOriginal),
+        gpxDataPreviewXml = convertGpxToString(gpxDataPreview),
+        gpxDataDetailXml = convertGpxToString(gpxDataDetail),
     )
-
-    @JsonIgnore
-    @Transient
-    val gpxDataOriginal: GpxTrk? = null
-        get() = field ?: gpxDataOriginalXml?.let {
-            xmlMapper.readValue<GpxTrk>(it)
-        }
-
-    @JsonIgnore
-    @Transient
-    val gpxDataPreview: GpxTrk? = null
-        get() = field ?: gpxDataPreviewXml?.let {
-            xmlMapper.readValue<GpxTrk>(it)
-        }
-
-    @JsonIgnore
-    @Transient
-    val gpxDataDetail: GpxTrk? = null
-        get() = field ?: gpxDataDetailXml?.let {
-            xmlMapper.readValue<GpxTrk>(it)
-        }
-
-    companion object {
-        private val xmlMapper = XmlMapper()
-    }
 }
 
-interface TrackRepository : CrudRepository<TrackEntity, String>
+interface TrackRepository : CrudRepository<TrackEntity, String> {
+    fun findByTrackId(trackId: String): Optional<TrackEntity>
+}

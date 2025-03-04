@@ -44,7 +44,7 @@ class DropboxApi(
         val queryParam = objectMapper.writeValueAsString(params)
         println("Querying all tracks with: $queryParam")
         val request = HttpRequest.newBuilder()
-            .uri(URI("https://api.dropboxapi.com/2/files/search_v2"))
+            .uri(URI("${dropboxConnectionParams.apiEndpoint}/2/files/search_v2"))
             .headers("Content-Type", "application/json")
             .headers("Authorization", "Bearer ${getAccessToken()}")
             .POST(HttpRequest.BodyPublishers.ofString(queryParam))
@@ -75,7 +75,7 @@ class DropboxApi(
         data class DropboxApiArg(val path: String)
 
         val request = HttpRequest.newBuilder()
-            .uri(URI("https://content.dropboxapi.com/2/files/download"))
+            .uri(URI("${dropboxConnectionParams.contentEndpoint}/2/files/download"))
             .headers("Content-Type", "text/plain")
             .headers("Authorization", "Bearer ${getAccessToken()}")
             .headers("Dropbox-API-Arg", objectMapper.writeValueAsString(DropboxApiArg(path)))
@@ -121,7 +121,7 @@ class DropboxApi(
         )
         val body = toFormData(formData)
         val request = HttpRequest.newBuilder()
-            .uri(URI("https://api.dropbox.com/oauth2/token"))
+            .uri(URI("${dropboxConnectionParams.apiEndpoint}/oauth2/token"))
             .POST(HttpRequest.BodyPublishers.ofString(body))
             .build()
 
