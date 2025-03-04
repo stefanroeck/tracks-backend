@@ -12,15 +12,17 @@ class DropboxBeans {
     @Bean("DropboxHttpClient")
     fun httpClient(): HttpClient {
         return HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(3))
-                .build()
+            .connectTimeout(Duration.ofSeconds(3))
+            .build()
     }
 
     @Component
-    class DropboxConnectionParams (
-            @Value("\${dropbox.clientId}") val clientId: String,
-            @Value("\${dropbox.secret}") val secret: String,
-            @Value("\${dropbox.refreshToken}") val refreshToken: String,
+    class DropboxConnectionParams(
+        @Value("\${dropbox.clientId}") val clientId: String,
+        @Value("\${dropbox.secret}") val secret: String,
+        @Value("\${dropbox.refreshToken}") val refreshToken: String,
+        @Value("\${dropbox.apiEndpoint}") val apiEndpoint: String,
+        @Value("\${dropbox.contentEndpoint}") val contentEndpoint: String,
     )
 
 }
