@@ -1,7 +1,6 @@
 package de.sroeck.tracksbackend.fit2gpx
 
 import com.garmin.fit.*
-import java.io.ByteArrayInputStream
 import java.time.Instant
 
 data class FitDataPoint(
@@ -28,13 +27,13 @@ data class FitSession(
 data class FitData(val fitDataPoints: List<FitDataPoint>, val fitSession: FitSession)
 
 fun parseFitFile(fitFile: ByteArray): FitData {
-    val decoder = Decode()
-    val collectedDataPoints = ArrayList<FitDataPoint>()
-
-    if (!decoder.checkFileIntegrity(ByteArrayInputStream(fitFile))) {
+    if (!Decoder.checkIntegrity(fitFile)) {
         error("provided file is not a valid fit file")
     }
-    val msgBroadcaster = MesgBroadcaster(decoder)
+    val decoder = Decoder(fitFile)
+    val collectedDataPoints = ArrayList<FitDataPoint>()
+
+    val msgBroadcaster = MesgBroadcaster()
     msgBroadcaster.addListener(RecordMesgListener { message ->
         if (message.positionLat != null && message.positionLong != null && message.timestamp != null) {
             collectedDataPoints.add(
@@ -63,7 +62,8 @@ fun parseFitFile(fitFile: ByteArray): FitData {
         )
     })
 
-    decoder.read(ByteArrayInputStream(fitFile), msgBroadcaster)
+    decoder.addListener(msgBroadcaster as MesgListener)
+    decoder.read()
 
     if (fitSession == null) {
         error("No fitSession found in fit file")
