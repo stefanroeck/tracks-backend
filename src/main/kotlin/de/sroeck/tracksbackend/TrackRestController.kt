@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException
 import java.time.Duration.ofDays
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:8080", "http://localhost:3000", "https://gpxtracks.vercel.app/"])
 class TrackRestController(val trackService: TrackService) {
 
     data class TrackBounds(val minLat: Double, val maxLat: Double, val minLon: Double, val maxLon: Double)
