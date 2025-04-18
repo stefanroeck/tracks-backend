@@ -26,6 +26,12 @@ interface TrackMetaData {
     val dropboxId: String
     val trackTimestamp: Instant
     val bounds: Bounds
+    val totalElapsedTime: Float
+    val totalTimerTime: Float
+    val totalDistance: Float
+    val totalAscent: Int
+    val totalDescent: Int
+    val totalCalories: Int
 }
 
 @Table(name = "TRACK")
@@ -36,6 +42,12 @@ class TrackEntity(
     override val trackName: String,
     override val dropboxId: String,
     override val trackTimestamp: Instant,
+    override val totalElapsedTime: Float,
+    override val totalTimerTime: Float,
+    override val totalDistance: Float,
+    override val totalAscent: Int,
+    override val totalDescent: Int,
+    override val totalCalories: Int,
     @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL) override val bounds: Bounds,
     @JsonIgnore val gpxDataOriginalXml: String?,
     @JsonIgnore val gpxDataPreviewXml: String?, // reduced set of points
@@ -46,6 +58,12 @@ class TrackEntity(
         trackName: String,
         dropboxId: String,
         trackTimestamp: Instant,
+        totalElapsedTime: Float,
+        totalTimerTime: Float,
+        totalDistance: Float,
+        totalAscent: Int,
+        totalDescent: Int,
+        totalCalories: Int,
         gpxDataOriginal: GpxTrk,
         gpxDataPreview: GpxTrk,
         gpxDataDetail: GpxTrk,
@@ -55,6 +73,12 @@ class TrackEntity(
         trackName = trackName,
         dropboxId = dropboxId,
         trackTimestamp = trackTimestamp,
+        totalElapsedTime = totalElapsedTime,
+        totalTimerTime = totalTimerTime,
+        totalDistance = totalDistance,
+        totalAscent = totalAscent,
+        totalDescent = totalDescent,
+        totalCalories = totalCalories,
         bounds = boundsFrom(gpxDataPreview),
         gpxDataOriginalXml = convertGpxToString(gpxDataOriginal),
         gpxDataPreviewXml = convertGpxToString(gpxDataPreview),

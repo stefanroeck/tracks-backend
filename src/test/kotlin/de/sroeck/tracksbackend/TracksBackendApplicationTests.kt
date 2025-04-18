@@ -53,6 +53,12 @@ class TracksBackendApplicationTests {
             gpxDataOriginal = gpxTrackFull,
             gpxDataDetail = gpxTrackFull,
             gpxDataPreview = gpxTrackShort,
+            totalElapsedTime = 11.0f,
+            totalTimerTime = 12.0f,
+            totalDistance = 134.0f,
+            totalAscent = 42,
+            totalDescent = 43,
+            totalCalories = 555,
         )
 
         val trackId = trackRepository.save(trackEntity).trackId
@@ -66,7 +72,18 @@ class TracksBackendApplicationTests {
             .returnResult().responseBody!!
 
         assertThat(savedEntity).usingRecursiveComparison()
-            .comparingOnlyFields("trackName", "dropboxId", "trackId")
+            .comparingOnlyFields(
+                "trackName",
+                "dropboxId",
+                "trackId",
+                "totalElapsedTime",
+                "totalElapsedTime",
+                "totalTimerTime",
+                "totalDistance",
+                "totalAscent",
+                "totalDescent",
+                "totalCalories",
+            )
             .isEqualTo(trackEntity)
         assertThat(savedEntity.internalTrackId).isGreaterThan(0)
         assertThat(savedEntity.gpxDataOriginalXml).isNull()

@@ -64,13 +64,19 @@ class TrackService(
                 println("Reduced #points for track ${gpxTrack.name} (${gpxTrack.trkseg.size}) to preview (${gpxTrackPreview.trkseg.size}) and detail (${gpxTrackDetail.trkseg.size})")
                 val entity =
                     TrackEntity(
-                        trackId(trackTimestamp),
-                        gpxTrack.name,
-                        dropboxTrack.id,
-                        trackTimestamp,
-                        gpxTrack,
-                        gpxTrackPreview,
-                        gpxTrackDetail
+                        trackId = trackId(trackTimestamp),
+                        trackName = gpxTrack.name,
+                        dropboxId = dropboxTrack.id,
+                        trackTimestamp = trackTimestamp,
+                        totalTimerTime = fitData.fitSession.totalTimerTime,
+                        totalElapsedTime = fitData.fitSession.totalElapsedTime,
+                        totalAscent = fitData.fitSession.totalAscent,
+                        totalDescent = fitData.fitSession.totalDescent,
+                        totalCalories = fitData.fitSession.totalCalories,
+                        totalDistance = fitData.fitSession.totalDistance,
+                        gpxDataOriginal = gpxTrack,
+                        gpxDataPreview = gpxTrackPreview,
+                        gpxDataDetail = gpxTrackDetail,
                     )
 
                 println("Persisting new track id:${entity.trackId} name:${entity.trackName} timestamp:${entity.trackTimestamp}")

@@ -5,6 +5,12 @@ CREATE TABLE IF NOT EXISTS track (
     track_name VARCHAR(255) NOT NULL,         -- trackName
     dropbox_id VARCHAR(255) NOT NULL,         -- dropboxId
     track_timestamp TIMESTAMP NOT NULL,      -- trackTimestamp (Instant)
+    total_elapsed_time REAL NOT NULL,
+    total_timer_time REAL NOT NULL,
+    total_distance REAL NOT NULL,
+    total_ascent INTEGER NOT NULL,
+    total_descent INTEGER NOT NULL,
+    total_calories INTEGER NOT NULL,
     min_lat DOUBLE NOT NULL,                 -- Bounds: minLat
     max_lat DOUBLE NOT NULL,                 -- Bounds: maxLat
     min_lon DOUBLE NOT NULL,                 -- Bounds: minLon

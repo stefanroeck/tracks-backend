@@ -69,5 +69,5 @@ fun parseFitFile(fitFile: ByteArray): FitData {
         error("No fitSession found in fit file")
     }
 
-    return FitData(collectedDataPoints, fitSession!!)
+    return FitData(collectedDataPoints, fitSession)
 }

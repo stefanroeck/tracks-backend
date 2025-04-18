@@ -70,6 +70,12 @@ class TrackRestControllerTest {
         override val dropboxId: String = "id123"
         override val trackTimestamp: Instant = Instant.ofEpochMilli(2)
         override val bounds: Bounds = bounds
+        override val totalElapsedTime: Float = 1.0f
+        override val totalTimerTime: Float = 1.0f
+        override val totalDistance: Float = 11.0f
+        override val totalAscent: Int = 122
+        override val totalDescent: Int = 144
+        override val totalCalories: Int = 1234
     }
 
 }
