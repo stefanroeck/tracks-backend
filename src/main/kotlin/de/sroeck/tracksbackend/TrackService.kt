@@ -4,6 +4,7 @@ import de.sroeck.tracksbackend.dropbox.DropboxApi
 import de.sroeck.tracksbackend.fit2gpx.FitGpxService
 import de.sroeck.tracksbackend.gpxreduce.GpxReduceService
 import de.sroeck.tracksbackend.gpxreduce.ReduceSize
+import de.sroeck.tracksbackend.weather.WeatherService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -18,6 +19,7 @@ class TrackService(
     @Autowired private val dropboxApi: DropboxApi,
     @Autowired private val fitGpxService: FitGpxService,
     @Autowired private val gpxReduceService: GpxReduceService,
+    @Autowired private val weatherService: WeatherService,
 ) {
 
     fun listAll(): List<TrackMetaData> {
@@ -62,6 +64,12 @@ class TrackService(
                 val gpxTrackPreview = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.SMALL)
                 val gpxTrackDetail = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.MEDIUM)
                 println("Reduced #points for track ${gpxTrack.name} (${gpxTrack.trkseg.size}) to preview (${gpxTrackPreview.trkseg.size}) and detail (${gpxTrackDetail.trkseg.size})")
+
+                val weather = weatherService.getWeather(
+                    lat = gpxTrack.trkseg.first().lat,
+                    lng = gpxTrack.trkseg.first().lon,
+                    timestamp = trackTimestamp
+                )
                 val entity =
                     TrackEntity(
                         trackId = trackId(trackTimestamp),
@@ -77,6 +85,7 @@ class TrackService(
                         gpxDataOriginal = gpxTrack,
                         gpxDataPreview = gpxTrackPreview,
                         gpxDataDetail = gpxTrackDetail,
+                        weather = Weather(temperature = weather.temperature, weatherSymbol = weather.weatherSymbol()),
                     )
 
                 println("Persisting new track id:${entity.trackId} name:${entity.trackName} timestamp:${entity.trackTimestamp}")

@@ -11,8 +11,8 @@ This app will roughly do the following
 - :white_check_mark: Process the track data for single usage (elevation view) and bulk data (map overview)
 - :white_check_mark: Make this performant, e.g. by leveraging some caching
 - :white_check_mark: Switch from Mongo to lightweight DB and write DB Integration tests
-- Also older process TCX files from Dropbox
-- Fetch Weather data and store in DB instead of fetching in UI
+- :white_check_mark: Fetch Weather data and store in DB instead of fetching in UI
+- Also process older TCX files from Dropbox
 - Migrate to Gradle for faster builds
 
 # Development
