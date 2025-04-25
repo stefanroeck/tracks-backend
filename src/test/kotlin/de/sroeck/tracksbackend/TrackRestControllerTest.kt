@@ -76,6 +76,7 @@ class TrackRestControllerTest {
         override val totalAscent: Int = 122
         override val totalDescent: Int = 144
         override val totalCalories: Int = 1234
+        override val weather: Weather = Weather("21°C", "n/a")
     }
 
 }

@@ -20,6 +20,8 @@ private fun boundsFrom(gpxTrack: GpxTrk): Bounds {
     return Bounds(minLat, maxLat, minLon, maxLon)
 }
 
+data class Weather(val temperature: String, val weatherSymbol: String)
+
 interface TrackMetaData {
     val trackId: String
     val trackName: String
@@ -32,6 +34,7 @@ interface TrackMetaData {
     val totalAscent: Int
     val totalDescent: Int
     val totalCalories: Int
+    val weather: Weather
 }
 
 @Table(name = "TRACK")
@@ -49,6 +52,7 @@ class TrackEntity(
     override val totalDescent: Int,
     override val totalCalories: Int,
     @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL) override val bounds: Bounds,
+    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL) override val weather: Weather,
     @JsonIgnore val gpxDataOriginalXml: String?,
     @JsonIgnore val gpxDataPreviewXml: String?, // reduced set of points
     @JsonIgnore val gpxDataDetailXml: String?, // more detailed set of points
@@ -67,6 +71,7 @@ class TrackEntity(
         gpxDataOriginal: GpxTrk,
         gpxDataPreview: GpxTrk,
         gpxDataDetail: GpxTrk,
+        weather: Weather,
     ) : this(
         internalTrackId = null,
         trackId = trackId,
@@ -80,6 +85,7 @@ class TrackEntity(
         totalDescent = totalDescent,
         totalCalories = totalCalories,
         bounds = boundsFrom(gpxDataPreview),
+        weather = weather,
         gpxDataOriginalXml = convertGpxToString(gpxDataOriginal),
         gpxDataPreviewXml = convertGpxToString(gpxDataPreview),
         gpxDataDetailXml = convertGpxToString(gpxDataDetail),

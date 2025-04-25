@@ -59,6 +59,7 @@ class TracksBackendApplicationTests {
             totalAscent = 42,
             totalDescent = 43,
             totalCalories = 555,
+            weather = Weather(temperature = "12°C", weatherSymbol = "cloudy")
         )
 
         val trackId = trackRepository.save(trackEntity).trackId
