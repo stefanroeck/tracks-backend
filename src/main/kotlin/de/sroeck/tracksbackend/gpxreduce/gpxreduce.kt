@@ -1,5 +1,9 @@
 package de.sroeck.tracksbackend.gpxreduce
 
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 
 data class Point<T>(val x: Double, val y: Double, val source: T)
 
@@ -9,7 +13,7 @@ fun <T> douglasPeucker(points: List<Point<T>>, epsilon: Double): List<Point<T>> 
         return points
     }
 
-    val dmax = points.map { point -> perpendicularDistance(point, points.first(), points.last()) }.maxOrNull() ?: 0.0
+    val dmax = points.maxOfOrNull { point -> perpendicularDistance(point, points.first(), points.last()) } ?: 0.0
 
     if (dmax > epsilon) {
         val index =
@@ -32,7 +36,7 @@ private fun <T> perpendicularDistance(point: Point<T>, first: Point<T>, last: Po
     val x2 = last.x
     val y2 = last.y
 
-    val numerator = Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1)
-    val denominator = Math.sqrt(Math.pow(y2 - y1, 2.0) + Math.pow(x2 - x1, 2.0))
+    val numerator = abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1)
+    val denominator = sqrt((y2 - y1).pow(2.0) + (x2 - x1).pow(2.0))
     return numerator / denominator
 }
