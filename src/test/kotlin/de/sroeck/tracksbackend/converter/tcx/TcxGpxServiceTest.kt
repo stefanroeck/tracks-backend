@@ -56,7 +56,7 @@ class TcxGpxServiceTest {
             )
         )
         Assertions.assertThat(result.name).isEqualTo("Biketour 123")
-        Assertions.assertThat(result.desc).isEqualTo("2022-09-16T07:26:21+02:00")
+        Assertions.assertThat(result.desc).isEqualTo("activity=Biking name=Biketour 123 time=2022-09-16T07:26:21+02:00")
     }
 
 

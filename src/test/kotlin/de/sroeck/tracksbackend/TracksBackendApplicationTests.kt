@@ -117,10 +117,10 @@ class TracksBackendApplicationTests {
     }
 
     @Test
-    fun `sync tracks via dropbox`() {
+    fun `sync fit track via dropbox`() {
         stubOAuthRequest()
-        stubSearchRequest()
-        stubDownloadRequest()
+        stubSearchRequest("track.fit")
+        stubDownloadRequest("track.fit", "dropboxTrack.fit")
 
         assertFetchAllTracksIsEmpty()
 
@@ -175,6 +175,65 @@ class TracksBackendApplicationTests {
             .isEqualTo("1516")
     }
 
+    @Test
+    fun `sync tcx track via dropbox`() {
+        stubOAuthRequest()
+        stubSearchRequest("track.tcx")
+        stubDownloadRequest("track.tcx", "dropboxTrack.tcx")
+
+        assertFetchAllTracksIsEmpty()
+
+        webTestClient.post()
+            .uri("/tracks/sync")
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBody()
+            .isEmpty
+
+        webTestClient.get()
+            .uri("/tracks")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.tracks.length()")
+            .isEqualTo(1)
+            .jsonPath("$.tracks[0].trackId")
+            .isEqualTo("20220916_0526")
+            .jsonPath("$.tracks[0].trackName")
+            .isEqualTo("track")
+            .jsonPath("$.tracks[0].dropboxId")
+            .isEqualTo("1")
+            .jsonPath("$.tracks[0].bounds.minLat")
+            .isEqualTo("49.023016")
+            .jsonPath("$.tracks[0].bounds.maxLat")
+            .isEqualTo("49.035783")
+            .jsonPath("$.tracks[0].bounds.minLon")
+            .isEqualTo("8.701048")
+            .jsonPath("$.tracks[0].bounds.maxLon")
+            .isEqualTo("8.783435")
+
+
+        webTestClient.get()
+            .uri("/tracks/20220916_0526/gpx")
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBody()
+            .xpath("//trk/desc")
+            .isEqualTo("activity=Biking name=track time=2022-09-16T07:26:21+02:00")
+            .xpath("count(//trkpt)")
+            .isEqualTo("74")
+
+        webTestClient.get()
+            .uri("/tracks/20220916_0526/gpx_detail")
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBody()
+            .xpath("//trk/desc")
+            .isEqualTo("activity=Biking name=track time=2022-09-16T07:26:21+02:00")
+            .xpath("count(//trkpt)")
+            .isEqualTo("197")
+    }
+    
     private fun assertFetchAllTracksIsEmpty() {
         webTestClient.get()
             .uri("/tracks")
@@ -200,7 +259,7 @@ class TracksBackendApplicationTests {
         )
     }
 
-    private fun stubSearchRequest() {
+    private fun stubSearchRequest(fileName: String) {
         stubFor(
             post("/2/files/search_v2")
                 .withHeader("Authorization", matching("Bearer $accessToken"))
@@ -213,8 +272,8 @@ class TracksBackendApplicationTests {
                                         "metadata": {
                                             "metadata": {
                                                 "id": "1",
-                                                "path_display": "/path/track.fit",
-                                                "name": "track.fit",
+                                                "path_display": "/path/$fileName",
+                                                "name": "$fileName",
                                                 "size": 100
                                             }                                    
                                         }
@@ -227,13 +286,13 @@ class TracksBackendApplicationTests {
         )
     }
 
-    private fun stubDownloadRequest() {
+    private fun stubDownloadRequest(fileName: String, bodyResponseFile: String) {
         stubFor(
             post("/2/files/download")
                 .withHeader("Authorization", matching("Bearer $accessToken"))
-                .withHeader("Dropbox-API-Arg", matching("""\{"path":"/path/track.fit"}"""))
+                .withHeader("Dropbox-API-Arg", matching("""\{"path":"/path/$fileName"}"""))
                 .willReturn(
-                    aResponse().withBodyFile("dropboxTrack.fit")
+                    aResponse().withBodyFile(bodyResponseFile)
                 )
         )
     }

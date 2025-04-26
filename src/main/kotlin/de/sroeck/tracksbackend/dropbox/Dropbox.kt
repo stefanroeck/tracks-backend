@@ -39,7 +39,7 @@ class DropboxApi(
 
         val params = DropboxSearchRequest(
             "#longdistancewalk",
-            DropboxSearchRequestOptions("/Apps/Runalyze/activities", listOf("fit"))
+            DropboxSearchRequestOptions("/Apps/Runalyze/activities", listOf("fit", "tcx"))
         )
         val queryParam = objectMapper.writeValueAsString(params)
         println("Querying all tracks with: $queryParam")
