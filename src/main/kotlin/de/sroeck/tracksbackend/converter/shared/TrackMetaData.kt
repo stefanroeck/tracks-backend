@@ -9,5 +9,5 @@ data class TrackMetaData(
     val totalDistance: Float,
     val totalAscent: Int,
     val totalDescent: Int,
-    val totalCalories: Int,
+    val totalCalories: Int?,
 )

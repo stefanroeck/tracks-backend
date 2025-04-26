@@ -53,7 +53,7 @@ class TcxGpxService : GpxConverter {
             totalDistance = activity.laps.sumOf { it.distanceMeters ?: 0.0 }.toFloat(),
             totalAscent = 0, // TODO
             totalDescent = 0, // TODO
-            totalCalories = activity.laps.sumOf { it.calories ?: 0 }
+            totalCalories = activity.laps.sumOf { it.calories ?: 0 }.let { if (it == 0) null else it }
         )
         return ConversionResult(gpx = gpx, metaData = metaData)
     }

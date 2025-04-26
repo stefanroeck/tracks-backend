@@ -33,7 +33,7 @@ interface TrackMetaData {
     val totalDistance: Float
     val totalAscent: Int
     val totalDescent: Int
-    val totalCalories: Int
+    val totalCalories: Int?
     val weather: Weather
 }
 
@@ -50,7 +50,7 @@ class TrackEntity(
     override val totalDistance: Float,
     override val totalAscent: Int,
     override val totalDescent: Int,
-    override val totalCalories: Int,
+    override val totalCalories: Int?,
     @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL) override val bounds: Bounds,
     @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL) override val weather: Weather,
     @JsonIgnore val gpxDataOriginalXml: String?,
@@ -67,7 +67,7 @@ class TrackEntity(
         totalDistance: Float,
         totalAscent: Int,
         totalDescent: Int,
-        totalCalories: Int,
+        totalCalories: Int?,
         gpxDataOriginal: GpxTrk,
         gpxDataPreview: GpxTrk,
         gpxDataDetail: GpxTrk,

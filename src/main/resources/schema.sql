@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS track (
     total_distance REAL NOT NULL,
     total_ascent INTEGER NOT NULL,
     total_descent INTEGER NOT NULL,
-    total_calories INTEGER NOT NULL,
+    total_calories INTEGER NULL,
     min_lat DOUBLE NOT NULL,                 -- Bounds: minLat
     max_lat DOUBLE NOT NULL,                 -- Bounds: maxLat
     min_lon DOUBLE NOT NULL,                 -- Bounds: minLon

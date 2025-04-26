@@ -144,6 +144,8 @@ class TracksBackendApplicationTests {
             .isEqualTo("track")
             .jsonPath("$.tracks[0].dropboxId")
             .isEqualTo("1")
+            .jsonPath("$.tracks[0].totalCalories")
+            .isEqualTo("1593")
             .jsonPath("$.tracks[0].bounds.minLat")
             .isEqualTo("48.46041667275131")
             .jsonPath("$.tracks[0].bounds.maxLat")
@@ -203,6 +205,8 @@ class TracksBackendApplicationTests {
             .isEqualTo("track")
             .jsonPath("$.tracks[0].dropboxId")
             .isEqualTo("1")
+            .jsonPath("$.tracks[0].totalCalories")
+            .isEmpty
             .jsonPath("$.tracks[0].bounds.minLat")
             .isEqualTo("49.023016")
             .jsonPath("$.tracks[0].bounds.maxLat")
@@ -233,7 +237,7 @@ class TracksBackendApplicationTests {
             .xpath("count(//trkpt)")
             .isEqualTo("197")
     }
-    
+
     private fun assertFetchAllTracksIsEmpty() {
         webTestClient.get()
             .uri("/tracks")
