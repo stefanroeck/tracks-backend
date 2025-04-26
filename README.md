@@ -1,7 +1,5 @@
 # Hiking Tracks Backend
 
-### State: WIP
-
 A Kotlin/JVM based backend to expose my hiking tracks to the frontend application (see https://gpxtracks.vercel.app/
 and https://github.com/stefanroeck/gpxtracks)
 This app will roughly do the following
@@ -12,10 +10,10 @@ This app will roughly do the following
 - :white_check_mark: Make this performant, e.g. by leveraging some caching
 - :white_check_mark: Switch from Mongo to lightweight DB and write DB Integration tests
 - :white_check_mark: Fetch Weather data and store in DB instead of fetching in UI
-- Also process older TCX files from Dropbox
+- :white_check_mark: Also process older TCX files from Dropbox
 - Migrate to Gradle for faster builds
 
-# Development
+# Local Development
 
 ### Build
 
