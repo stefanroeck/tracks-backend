@@ -1,5 +1,6 @@
-package de.sroeck.tracksbackend.fit2gpx
+package de.sroeck.tracksbackend.converter.fit
 
+import de.sroeck.tracksbackend.converter.shared.GpxTrk
 import org.springframework.stereotype.Service
 
 @Service

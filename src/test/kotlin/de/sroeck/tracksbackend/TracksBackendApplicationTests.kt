@@ -1,8 +1,11 @@
 package de.sroeck.tracksbackend
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
-import de.sroeck.tracksbackend.fit2gpx.GpxTrk
-import de.sroeck.tracksbackend.fit2gpx.GpxTrkPt
+import de.sroeck.tracksbackend.converter.shared.GpxTrk
+import de.sroeck.tracksbackend.converter.shared.GpxTrkPt
+import de.sroeck.tracksbackend.persistence.TrackEntity
+import de.sroeck.tracksbackend.persistence.TrackRepository
+import de.sroeck.tracksbackend.persistence.Weather
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

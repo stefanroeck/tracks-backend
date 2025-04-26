@@ -1,5 +1,7 @@
 package de.sroeck.tracksbackend
 
+import de.sroeck.tracksbackend.persistence.TrackEntity
+import de.sroeck.tracksbackend.persistence.TrackMetaData
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

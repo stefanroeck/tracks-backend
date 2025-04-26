@@ -1,8 +1,8 @@
 package de.sroeck.tracksbackend.gpxreduce
 
-import de.sroeck.tracksbackend.fit2gpx.ParseFitKtTest
-import de.sroeck.tracksbackend.fit2gpx.convertFitToGpx
-import de.sroeck.tracksbackend.fit2gpx.parseFitFile
+import de.sroeck.tracksbackend.converter.fit.ParseFitKtTest
+import de.sroeck.tracksbackend.converter.fit.convertFitToGpx
+import de.sroeck.tracksbackend.converter.fit.parseFitFile
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

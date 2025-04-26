@@ -1,8 +1,8 @@
-package de.sroeck.tracksbackend
+package de.sroeck.tracksbackend.persistence
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import de.sroeck.tracksbackend.fit2gpx.GpxTrk
-import de.sroeck.tracksbackend.fit2gpx.convertGpxToString
+import de.sroeck.tracksbackend.converter.fit.convertGpxToString
+import de.sroeck.tracksbackend.converter.shared.GpxTrk
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Embedded
 import org.springframework.data.relational.core.mapping.Table

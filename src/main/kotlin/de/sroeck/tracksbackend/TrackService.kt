@@ -1,9 +1,13 @@
 package de.sroeck.tracksbackend
 
+import de.sroeck.tracksbackend.converter.fit.FitGpxService
 import de.sroeck.tracksbackend.dropbox.DropboxApi
-import de.sroeck.tracksbackend.fit2gpx.FitGpxService
 import de.sroeck.tracksbackend.gpxreduce.GpxReduceService
 import de.sroeck.tracksbackend.gpxreduce.ReduceSize
+import de.sroeck.tracksbackend.persistence.TrackEntity
+import de.sroeck.tracksbackend.persistence.TrackMetaData
+import de.sroeck.tracksbackend.persistence.TrackRepository
+import de.sroeck.tracksbackend.persistence.Weather
 import de.sroeck.tracksbackend.weather.WeatherService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

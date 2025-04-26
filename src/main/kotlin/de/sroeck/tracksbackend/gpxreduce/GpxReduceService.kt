@@ -1,6 +1,6 @@
 package de.sroeck.tracksbackend.gpxreduce
 
-import de.sroeck.tracksbackend.fit2gpx.GpxTrk
+import de.sroeck.tracksbackend.converter.shared.GpxTrk
 import org.springframework.stereotype.Component
 
 enum class ReduceSize(val epsilon: Double) {

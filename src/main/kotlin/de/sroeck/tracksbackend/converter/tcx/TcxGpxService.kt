@@ -1,10 +1,10 @@
-package de.sroeck.tracksbackend.tcx
+package de.sroeck.tracksbackend.converter.tcx
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import de.sroeck.tracksbackend.fit2gpx.GpxTrk
-import de.sroeck.tracksbackend.fit2gpx.GpxTrkPt
+import de.sroeck.tracksbackend.converter.shared.GpxTrk
+import de.sroeck.tracksbackend.converter.shared.GpxTrkPt
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,4 +1,4 @@
-package de.sroeck.tracksbackend.tcx
+package de.sroeck.tracksbackend.converter.tcx
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty

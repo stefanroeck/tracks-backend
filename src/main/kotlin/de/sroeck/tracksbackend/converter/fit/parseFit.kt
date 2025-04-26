@@ -1,4 +1,4 @@
-package de.sroeck.tracksbackend.fit2gpx
+package de.sroeck.tracksbackend.converter.fit
 
 import com.garmin.fit.*
 import java.io.ByteArrayInputStream
