@@ -1,8 +1,10 @@
-package de.sroeck.tracksbackend.fit2gpx
+package de.sroeck.tracksbackend.converter.fit
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.garmin.fit.DateTime
+import de.sroeck.tracksbackend.converter.shared.GpxTrk
+import de.sroeck.tracksbackend.converter.shared.GpxTrkPt
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.pow

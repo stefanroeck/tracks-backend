@@ -1,9 +1,14 @@
 package de.sroeck.tracksbackend
 
+import de.sroeck.tracksbackend.converter.shared.ConversionContext
+import de.sroeck.tracksbackend.converter.shared.GpxConverter
 import de.sroeck.tracksbackend.dropbox.DropboxApi
-import de.sroeck.tracksbackend.fit2gpx.FitGpxService
 import de.sroeck.tracksbackend.gpxreduce.GpxReduceService
 import de.sroeck.tracksbackend.gpxreduce.ReduceSize
+import de.sroeck.tracksbackend.persistence.TrackEntity
+import de.sroeck.tracksbackend.persistence.TrackMetaData
+import de.sroeck.tracksbackend.persistence.TrackRepository
+import de.sroeck.tracksbackend.persistence.Weather
 import de.sroeck.tracksbackend.weather.WeatherService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -17,7 +22,7 @@ import kotlin.time.measureTimedValue
 class TrackService(
     @Autowired private val trackRepository: TrackRepository,
     @Autowired private val dropboxApi: DropboxApi,
-    @Autowired private val fitGpxService: FitGpxService,
+    @Autowired private val gpxConverterCandidates: List<GpxConverter>,
     @Autowired private val gpxReduceService: GpxReduceService,
     @Autowired private val weatherService: WeatherService,
 ) {
@@ -42,6 +47,10 @@ class TrackService(
         trackRepository.deleteAll()
     }
 
+    private fun conversionService(discriminator: String): GpxConverter {
+        return gpxConverterCandidates.first { it.canHandle(discriminator) }
+    }
+
     fun fetchNewTracksFromDropboxAndPersistThem() {
         val elapsed = measureTime {
             val existingTracks = measureTimedValue { trackRepository.findAll() }
@@ -56,10 +65,13 @@ class TrackService(
                 println("Processing track ${dropboxTrack.id} / ${dropboxTrack.path} / ${dropboxTrack.name}")
                 val bytes = dropboxApi.downloadTrack(dropboxTrack.path)
                 println("Downloaded ${bytes.size / 1024}kb")
-                val fitData = fitGpxService.parseAsFit(bytes)
-                val trackTimestamp = fitData.fitSession.trackTimestamp()
-                val trackName = removeTimestamp(dropboxTrack.name.replace(".fit", ""))
-                val gpxTrack = fitGpxService.convertToGpx(fitData, trackName)
+
+                val trackName = dropboxTrack.name.removeTimestamp().removeExtension()
+                val (gpxTrack, metadata) = conversionService(dropboxTrack.name).convert(
+                    bytes,
+                    ConversionContext(trackName)
+                )
+                val trackTimestamp = metadata.trackTimestamp
 
                 val gpxTrackPreview = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.SMALL)
                 val gpxTrackDetail = gpxReduceService.reduceGpx(gpxTrack, ReduceSize.MEDIUM)
@@ -76,12 +88,12 @@ class TrackService(
                         trackName = gpxTrack.name,
                         dropboxId = dropboxTrack.id,
                         trackTimestamp = trackTimestamp,
-                        totalTimerTime = fitData.fitSession.totalTimerTime,
-                        totalElapsedTime = fitData.fitSession.totalElapsedTime,
-                        totalAscent = fitData.fitSession.totalAscent,
-                        totalDescent = fitData.fitSession.totalDescent,
-                        totalCalories = fitData.fitSession.totalCalories,
-                        totalDistance = fitData.fitSession.totalDistance,
+                        totalTimerTime = metadata.totalTimerTime,
+                        totalElapsedTime = metadata.totalElapsedTime,
+                        totalAscent = metadata.totalAscent,
+                        totalDescent = metadata.totalDescent,
+                        totalCalories = metadata.totalCalories,
+                        totalDistance = metadata.totalDistance,
                         gpxDataOriginal = gpxTrack,
                         gpxDataPreview = gpxTrackPreview,
                         gpxDataDetail = gpxTrackDetail,
@@ -97,12 +109,21 @@ class TrackService(
     }
 
     // 2024-05-09 08:17 Neckarsteig, Etappe 3 und 4
-    private fun removeTimestamp(dropboxName: String): String {
+    private fun String.removeTimestamp(): String {
         val regex = Regex("(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}) (.*)")
-        if (regex.containsMatchIn(dropboxName)) {
-            return regex.find(dropboxName)!!.groupValues[2]
+        if (regex.containsMatchIn(this)) {
+            return regex.find(this)!!.groupValues[2]
         }
-        return dropboxName
+        return this
+    }
+
+    private fun String.removeExtension(): String {
+        val idx = lastIndexOf(".")
+        return if (idx > 0) {
+            substring(0, idx)
+        } else {
+            this
+        }
     }
 
     private fun trackId(trackTimestamp: Instant): String {

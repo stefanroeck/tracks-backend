@@ -1,4 +1,4 @@
-package de.sroeck.tracksbackend.fit2gpx
+package de.sroeck.tracksbackend.converter.shared
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty

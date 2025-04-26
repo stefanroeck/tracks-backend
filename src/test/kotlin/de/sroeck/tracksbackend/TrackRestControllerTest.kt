@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import de.sroeck.tracksbackend.persistence.Bounds
+import de.sroeck.tracksbackend.persistence.TrackMetaData
+import de.sroeck.tracksbackend.persistence.Weather
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
