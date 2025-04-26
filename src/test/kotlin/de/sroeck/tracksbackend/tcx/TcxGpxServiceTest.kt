@@ -1,12 +1,16 @@
 package de.sroeck.tracksbackend.tcx
 
+import de.sroeck.tracksbackend.fit2gpx.GpxTrkPt
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class TcxGpxServiceTest {
+
+    private val tcxGpxService = TcxGpxService()
+
     @Test
     fun `parse sample tcx file`() {
-        val result = TcxGpxService().parseTcxBytes(sampleTcxFileAsBytes())
+        val result = tcxGpxService.parseTcxBytes(sampleTcxFileAsBytes())
 
         assertThat(result.activities).hasSize(1)
         with<Activity, Any>(result.activities.first()) {
@@ -33,7 +37,28 @@ class TcxGpxServiceTest {
             }
         }
     }
-    
+
+    @Test
+    fun `parse tcx and convert to gpx`() {
+        val trainingCenterDatabase = tcxGpxService.parseTcxBytes(sampleTcxFileAsBytes())
+        val result = tcxGpxService.tcxToGpx(trainingCenterDatabase, "Biketour 123")
+        val expectedPointCount =
+            trainingCenterDatabase.activities.flatMap { it.laps }.flatMap { it.trackpoints }.count()
+
+        assertThat(expectedPointCount).isEqualTo(1206)
+        assertThat(result.trkseg).hasSize(expectedPointCount)
+        assertThat(result.trkseg.first()).isEqualTo(
+            GpxTrkPt(
+                lat = 49.02793,
+                lon = 8.783435,
+                ele = 215,
+                time = "2022-09-16T07:26:21+02:00"
+            )
+        )
+        assertThat(result.name).isEqualTo("Biketour 123")
+        assertThat(result.desc).isEqualTo("2022-09-16T07:26:21+02:00")
+    }
+
 
     private fun sampleTcxFileAsBytes(): ByteArray {
         val bytes = TcxGpxServiceTest::class.java.classLoader.getResource("sampleTcxFile.tcx")?.readBytes()
