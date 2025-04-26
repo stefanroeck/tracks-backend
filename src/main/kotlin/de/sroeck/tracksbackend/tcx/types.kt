@@ -7,15 +7,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement
 @JacksonXmlRootElement(localName = "TrainingCenterDatabase")
 data class TrainingCenterDatabase(
     @JacksonXmlProperty(localName = "Activities")
-    val activityWrapper: Activities? = null
-)
+    val activities: List<Activity>
 
-data class Activities(
-    @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "Activity")
-    val activities: List<Activity> = emptyList()
 )
-
 
 data class Activity(
     @JacksonXmlProperty(isAttribute = true, localName = "Sport")
@@ -43,12 +37,6 @@ data class Lap(
     val calories: Int? = null,
 
     @JacksonXmlProperty(localName = "Track")
-    val trackpointsWrapper: Trackpoints? = null
-)
-
-data class Trackpoints(
-    @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "Trackpoint")
     val trackpoints: List<Trackpoint> = emptyList()
 )
 
