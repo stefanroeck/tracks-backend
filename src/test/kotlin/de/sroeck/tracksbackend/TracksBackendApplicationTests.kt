@@ -23,7 +23,7 @@ import java.time.Instant
 class TracksBackendApplicationTests {
 
     companion object {
-        const val accessToken: String = "0xABDEF"
+        const val accessToken: String = "0xABDEFGHIJKLMNOPQRST"
     }
 
     @Autowired

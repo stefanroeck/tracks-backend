@@ -21,6 +21,10 @@ class DropboxApi(
         private val expiresAt = Instant.now().plusSeconds(expiresIn)
 
         fun expired() = Instant.now().isAfter(expiresAt)
+
+        override fun toString(): String {
+            return "AccessToken {accessToken=${accessToken.substring(0..10)}..., expiresAt=$expiresAt}"
+        }
     }
 
     private data class DropboxSearchRequestOptions(
@@ -109,6 +113,7 @@ class DropboxApi(
         println("Obtaining new accessToken")
         val accessTokenResponse = fetchAccessToken()
         this.accessToken = AccessToken(accessTokenResponse.accessToken, accessTokenResponse.expiresIn)
+        println("Fetched new accessToken: $accessToken")
         return accessTokenResponse.accessToken
     }
 
@@ -127,8 +132,11 @@ class DropboxApi(
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
         val responseText: String = response.body()
-        val tokenResponse = objectMapper.readValue(responseText, AccessTokenResponse::class.java)
-
-        return tokenResponse
+        if (response.statusCode() == 200) {
+            val tokenResponse = objectMapper.readValue(responseText, AccessTokenResponse::class.java)
+            return tokenResponse
+        } else {
+            error("Unexpected dropbox response: code=${response.statusCode()}, body=${responseText}")
+        }
     }
 }
