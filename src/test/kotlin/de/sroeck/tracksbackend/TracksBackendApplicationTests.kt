@@ -180,8 +180,8 @@ class TracksBackendApplicationTests {
     @Test
     fun `sync tcx track via dropbox`() {
         stubOAuthRequest()
-        stubSearchRequest("track.tcx")
-        stubDownloadRequest("track.tcx", "dropboxTrack.tcx")
+        stubSearchRequest("träck.tcx")
+        stubDownloadRequest("tr\\u00e4ck.tcx", "dropboxTrack.tcx")
 
         assertFetchAllTracksIsEmpty()
 
@@ -202,7 +202,7 @@ class TracksBackendApplicationTests {
             .jsonPath("$.tracks[0].trackId")
             .isEqualTo("20220916_0526")
             .jsonPath("$.tracks[0].trackName")
-            .isEqualTo("track")
+            .isEqualTo("träck")
             .jsonPath("$.tracks[0].dropboxId")
             .isEqualTo("1")
             .jsonPath("$.tracks[0].totalCalories")
@@ -223,7 +223,7 @@ class TracksBackendApplicationTests {
             .expectStatus().is2xxSuccessful
             .expectBody()
             .xpath("//trk/desc")
-            .isEqualTo("activity=Biking name=track time=2022-09-16T07:26:21+02:00")
+            .isEqualTo("activity=Biking name=träck time=2022-09-16T07:26:21+02:00")
             .xpath("count(//trkpt)")
             .isEqualTo("74")
 
@@ -233,7 +233,7 @@ class TracksBackendApplicationTests {
             .expectStatus().is2xxSuccessful
             .expectBody()
             .xpath("//trk/desc")
-            .isEqualTo("activity=Biking name=track time=2022-09-16T07:26:21+02:00")
+            .isEqualTo("activity=Biking name=träck time=2022-09-16T07:26:21+02:00")
             .xpath("count(//trkpt)")
             .isEqualTo("197")
     }
@@ -266,7 +266,7 @@ class TracksBackendApplicationTests {
     private fun stubSearchRequest(fileName: String) {
         stubFor(
             post("/2/files/search_v2")
-                .withHeader("Authorization", matching("Bearer $accessToken"))
+                .withHeader("Authorization", equalTo("Bearer $accessToken"))
                 .willReturn(
                     aResponse().withBody(
                         """
@@ -293,8 +293,8 @@ class TracksBackendApplicationTests {
     private fun stubDownloadRequest(fileName: String, bodyResponseFile: String) {
         stubFor(
             post("/2/files/download")
-                .withHeader("Authorization", matching("Bearer $accessToken"))
-                .withHeader("Dropbox-API-Arg", matching("""\{"path":"/path/$fileName"}"""))
+                .withHeader("Authorization", equalTo("Bearer $accessToken"))
+                .withHeader("Dropbox-API-Arg", equalTo("""{"path":"/path/$fileName"}"""))
                 .willReturn(
                     aResponse().withBodyFile(bodyResponseFile)
                 )

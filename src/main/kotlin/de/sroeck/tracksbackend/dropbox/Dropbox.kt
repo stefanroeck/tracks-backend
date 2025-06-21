@@ -76,13 +76,12 @@ class DropboxApi(
 
     fun downloadTrack(path: String): ByteArray {
         println("Downloading track: $path")
-        data class DropboxApiArg(val path: String)
 
         val request = HttpRequest.newBuilder()
             .uri(URI("${dropboxConnectionParams.contentEndpoint}/2/files/download"))
             .headers("Content-Type", "text/plain")
             .headers("Authorization", "Bearer ${getAccessToken()}")
-            .headers("Dropbox-API-Arg", objectMapper.writeValueAsString(DropboxApiArg(path)))
+            .headers("Dropbox-API-Arg", dropboxApiArg(path))
             .POST(HttpRequest.BodyPublishers.ofString(""))
             .build()
 
@@ -139,4 +138,23 @@ class DropboxApi(
             error("Unexpected dropbox response: code=${response.statusCode()}, body=${responseText}")
         }
     }
+
+    private fun dropboxApiArg(path: String): String {
+        // See https://www.dropbox.com/developers/reference/json-encoding
+        val escapedPath = escapeUnicode(path)
+        return """{"path":"$escapedPath"}"""
+    }
+
+    private fun escapeUnicode(input: String): String {
+        return buildString {
+            for (ch in input) {
+                if (ch.code in 32..126) {
+                    append(ch)  // Keep standard ASCII characters
+                } else {
+                    append(String.format("\\u%04x", ch.code))  // Escape Unicode
+                }
+            }
+        }
+    }
+
 }
