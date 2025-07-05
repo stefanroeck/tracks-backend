@@ -58,8 +58,12 @@ class TrackRestController(val trackService: TrackService) {
         trackService.deleteAllTracks()
     }
 
+    data class SyncResponse(val syncedTracks: Int)
+
     @PostMapping("/tracks/sync")
-    fun syncTracks() {
-        trackService.fetchNewTracksFromDropboxAndPersistThem()
+    fun syncTracks(): SyncResponse {
+        trackService.fetchNewTracksFromDropboxAndPersistThem().let {
+            return SyncResponse(syncedTracks = it.syncedTracks)
+        }
     }
 }

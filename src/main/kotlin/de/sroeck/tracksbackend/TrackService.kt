@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 @Service
@@ -51,8 +50,10 @@ class TrackService(
         return gpxConverterCandidates.first { it.canHandle(discriminator) }
     }
 
-    fun fetchNewTracksFromDropboxAndPersistThem() {
-        val elapsed = measureTime {
+    data class SyncResult(val syncedTracks: Int)
+
+    fun fetchNewTracksFromDropboxAndPersistThem(): SyncResult {
+        val (result, elapsed) = measureTimedValue {
             val existingTracks = measureTimedValue { trackRepository.findAll() }
             val knownDropboxIds = existingTracks.value.map { it.dropboxId }.toSet()
             println("Reading ${knownDropboxIds.size} already persisted tracks from database took ${existingTracks.duration.inWholeMilliseconds}ms")
@@ -103,9 +104,11 @@ class TrackService(
                 println("Persisting new track id:${entity.trackId} name:${entity.trackName} timestamp:${entity.trackTimestamp}")
                 trackRepository.save(entity)
             }
+            SyncResult(newDropboxTracks.size)
         }
 
         println("Syncing tracks with Dropbox took ${elapsed.inWholeMilliseconds}ms")
+        return result
     }
 
     // 2024-05-09 08:17 Neckarsteig, Etappe 3 und 4
