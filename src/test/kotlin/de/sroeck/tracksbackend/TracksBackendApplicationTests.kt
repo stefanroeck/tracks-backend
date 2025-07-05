@@ -129,7 +129,8 @@ class TracksBackendApplicationTests {
             .exchange()
             .expectStatus().is2xxSuccessful
             .expectBody()
-            .isEmpty
+            .jsonPath("syncedTracks")
+            .isEqualTo(1)
 
         webTestClient.get()
             .uri("/tracks")
@@ -190,7 +191,8 @@ class TracksBackendApplicationTests {
             .exchange()
             .expectStatus().is2xxSuccessful
             .expectBody()
-            .isEmpty
+            .jsonPath("syncedTracks")
+            .isEqualTo(1)
 
         webTestClient.get()
             .uri("/tracks")
