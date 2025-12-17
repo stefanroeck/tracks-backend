@@ -3,6 +3,7 @@ package de.sroeck.tracksbackend.dropbox
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.stereotype.Service
 import java.net.URI
 import java.net.http.HttpClient
@@ -55,22 +56,24 @@ class DropboxApi(
             .build()
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        if (response.statusCode() == 200) {
-            val jsonResponse = objectMapper.readValue(response.body(), JsonNode::class.java)
-            val matches = jsonResponse.get("matches")
-            return matches
-                .map { match: JsonNode -> { match.get("metadata").get("metadata") } }
-                .map { file: () -> JsonNode ->
-                    DropboxTracks(
-                        file().get("id").asText(),
-                        file().get("path_display").asText(),
-                        file().get("name").asText(),
-                        file().get("size").asInt()
-                    )
-                }
+        return if (response.statusCode() == 200) {
+            objectMapper.readValue<JsonNode>(response.body()).let { jsonResponse ->
+                jsonResponse.get("matches")
+                    .map { match -> match.get("metadata").get("metadata") }
+                    .map { file ->
+                        with(file) {
+                            DropboxTracks(
+                                get("id").asText(),
+                                get("path_display").asText(),
+                                get("name").asText(),
+                                get("size").asInt()
+                            )
+                        }
+                    }
+            }
         } else {
             println("Unexpected dropbox response: code=${response.statusCode()}, body=${response.body()}")
-            return emptyList()
+            emptyList()
         }
     }
 
@@ -132,8 +135,7 @@ class DropboxApi(
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
         val responseText: String = response.body()
         if (response.statusCode() == 200) {
-            val tokenResponse = objectMapper.readValue(responseText, AccessTokenResponse::class.java)
-            return tokenResponse
+            return objectMapper.readValue<AccessTokenResponse>(responseText)
         } else {
             error("Unexpected dropbox response: code=${response.statusCode()}, body=${responseText}")
         }
