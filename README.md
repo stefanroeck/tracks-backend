@@ -12,6 +12,8 @@ This app will roughly do the following
 - :white_check_mark: Fetch Weather data and store in DB instead of fetching in UI
 - :white_check_mark: Also process older TCX files from Dropbox
 - Migrate to Gradle for faster builds
+- Delete/Sync single tracks (weather, wrong name)
+- Render photos from track based on date & gps
 
 # Local Development
 
