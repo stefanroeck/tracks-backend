@@ -14,6 +14,7 @@ This app will roughly do the following
 - Migrate to Gradle for faster builds
 - Delete/Sync single tracks (weather, wrong name)
 - Render photos from track based on date & gps
+- Correct Elevation Data, e.g this API: https://valhalla.github.io/valhalla/api/elevation/api-reference/
 
 # Local Development
 
